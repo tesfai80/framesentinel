@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd marketing-site && npm install && npm run build",
-  "outputDirectory": "marketing-site/.next",
-  "installCommand": "cd marketing-site && npm install"
-}
