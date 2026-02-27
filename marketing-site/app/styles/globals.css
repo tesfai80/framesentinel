@@ -51,3 +51,16 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: #059669;
 }
+
+/* Mobile-first responsive utilities */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-mobile {
+    display: none !important;
+  }
+}

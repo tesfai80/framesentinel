@@ -1,8 +1,11 @@
 'use client';
 import { Check, ArrowRight, Shield } from 'lucide-react';
 import Link from 'next/link';
+import { useIsMobile } from '../utils/useIsMobile';
+import { MobileNav, DesktopNav } from '../components/Navigation';
 
 export default function PricingPage() {
+  const isMobile = useIsMobile();
   const plans = [
     {
       name: 'Starter',
@@ -60,55 +63,15 @@ export default function PricingPage() {
 
   return (
     <div>
-      {/* Navigation */}
-      <nav style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        background: 'rgba(15, 20, 25, 0.95)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(16, 185, 129, 0.2)',
-        zIndex: 1000,
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '20px 40px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Shield size={32} color="#10b981" />
-            <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>FrameSentinel</span>
-          </Link>
-          <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-            <Link href="/#features" style={{ color: '#e8eaed', fontSize: '16px' }}>Features</Link>
-            <Link href="/pricing" style={{ color: '#10b981', fontSize: '16px', fontWeight: '600' }}>Pricing</Link>
-            <Link href="/docs" style={{ color: '#e8eaed', fontSize: '16px' }}>Docs</Link>
-            <Link href="/login" style={{
-              padding: '10px 24px',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: '#e8eaed',
-              borderRadius: '8px',
-              fontWeight: '600',
-              fontSize: '16px',
-            }}>
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </nav>
+      {isMobile ? <MobileNav /> : <DesktopNav />}
 
-      {/* Hero */}
       <section style={{
-        marginTop: '80px',
-        padding: '80px 40px 60px',
+        marginTop: isMobile ? '60px' : '80px',
+        padding: isMobile ? '60px 20px 40px' : '80px 40px 60px',
         textAlign: 'center',
       }}>
         <h1 style={{
-          fontSize: '56px',
+          fontSize: isMobile ? '36px' : '56px',
           fontWeight: 'bold',
           marginBottom: '20px',
           background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
@@ -118,9 +81,10 @@ export default function PricingPage() {
           Simple, Transparent Pricing
         </h1>
         <p style={{
-          fontSize: '20px',
+          fontSize: isMobile ? '16px' : '20px',
           color: '#9ca3af',
           marginBottom: '16px',
+          padding: isMobile ? '0 10px' : '0',
         }}>
           Choose the plan that fits your needs. All plans include 14-day free trial.
         </p>
@@ -132,14 +96,13 @@ export default function PricingPage() {
         </p>
       </section>
 
-      {/* Pricing Cards */}
-      <section style={{ padding: '40px 40px 100px' }}>
+      <section style={{ padding: isMobile ? '20px' : '40px 40px 100px' }}>
         <div style={{
           maxWidth: '1200px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '30px',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+          gap: isMobile ? '24px' : '30px',
         }}>
           {plans.map((plan, idx) => (
             <div key={idx} style={{

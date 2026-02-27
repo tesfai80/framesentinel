@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { Shield, Mail, Lock, User, Building, ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
+import { CustomSelect } from '../components/CustomSelect';
+import { useIsMobile } from '../utils/useIsMobile';
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -12,6 +14,7 @@ export default function SignUpPage() {
     plan: 'starter',
   });
   const [loading, setLoading] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,15 +28,14 @@ export default function SignUpPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex' }}>
-      {/* Left Side - Form */}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
       <div style={{
         flex: 1,
-        padding: '60px',
+        padding: isMobile ? '40px 20px' : '60px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        maxWidth: '600px',
+        maxWidth: isMobile ? '100%' : '600px',
         margin: '0 auto',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '48px' }}>
@@ -215,24 +217,16 @@ export default function SignUpPage() {
             }}>
               Select Plan
             </label>
-            <select
+            <CustomSelect
               value={formData.plan}
-              onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '14px',
-                background: '#2d3548',
-                border: '1px solid #374151',
-                borderRadius: '10px',
-                color: '#e8eaed',
-                fontSize: '16px',
-                cursor: 'pointer',
-              }}
-            >
-              <option value="starter">Starter - $99/month</option>
-              <option value="professional">Professional - $499/month</option>
-              <option value="enterprise">Enterprise - Custom</option>
-            </select>
+              onChange={(value) => setFormData({ ...formData, plan: value })}
+              options={[
+                { value: 'starter', label: 'Starter - $99/month' },
+                { value: 'professional', label: 'Professional - $499/month' },
+                { value: 'enterprise', label: 'Enterprise - Custom' },
+              ]}
+              placeholder="Select a plan"
+            />
           </div>
 
           <button
@@ -283,7 +277,7 @@ export default function SignUpPage() {
         </p>
       </div>
 
-      {/* Right Side - Benefits */}
+      {!isMobile && (
       <div style={{
         flex: 1,
         background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 31, 15, 0.3) 100%)',
@@ -382,6 +376,7 @@ export default function SignUpPage() {
           </p>
         </div>
       </div>
+      )}
     </div>
   );
 }
