@@ -1,0 +1,324 @@
+# FrameSentinel
+## AI Video KYC Fraud Detection Platform
+
+FrameSentinel is a Video Integrity Verification platform designed to detect AI-manipulated, replayed, or spoofed identity verification videos used during digital onboarding processes (KYC).
+
+The system analyzes identity verification videos at the frame level and provides authenticity scoring, tampering timelines, and fraud risk indicators via API.
+
+---
+
+# 1. High-Level Architecture
+Client (Fintech App)
+│
+├── SDK / API Integration
+│
+└── Upload Identity Video
+│
+▼
+API Gateway
+│
+▼
+Upload Service
+│
+▼
+Secure Object Storage
+│
+▼
+Processing Queue
+│
+▼
+Frame Extraction Service
+│
+▼
+Detection Pipeline
+├── Liveness Analysis
+├── Replay Attack Detection
+├── Deepfake Detection
+├── Face Swap Detection
+├── Injection Detection
+└── Metadata Integrity Check
+│
+▼
+Frame Integrity Aggregator
+│
+▼
+Fraud Risk Scoring Engine
+│
+▼
+Result Store
+│
+▼
+Reporting API
+│
+▼
+Client Receives:
+
+Authenticity Score
+
+Tamper Timeline
+
+Risk Flags
+
+---
+
+# 2. Frontend Responsibilities (Client-Side SDK/API)
+
+The client application is responsible for:
+
+- Capturing identity verification video
+- Performing optional pre-upload checks
+- Initiating verification session
+- Uploading video securely
+- Polling or subscribing to verification result
+- Displaying decision feedback from backend
+
+Client sends:
+
+- Session ID
+- User ID (external reference)
+- Video file
+- Device metadata
+- Timestamp
+
+---
+
+# 3. Backend System Components
+
+## 3.1 API Gateway
+Handles:
+
+- Authentication
+- Request validation
+- Session creation
+- Rate limiting
+- Routing to upload service
+
+---
+
+## 3.2 Verification Session Service
+
+Responsible for:
+
+- Session lifecycle management
+- Mapping uploaded video to verification session
+- Tracking processing state
+- Managing client polling/webhook callbacks
+
+Session States:
+
+- CREATED
+- UPLOADED
+- PROCESSING
+- ANALYZED
+- COMPLETED
+- FAILED
+
+---
+
+## 3.3 Upload Service
+
+Responsibilities:
+
+- Accepts video stream or file upload
+- Validates format and size
+- Stores securely in object storage
+- Generates processing task
+
+Triggers:
+
+- Processing job enqueue event
+
+---
+
+## 3.4 Processing Queue
+
+Used for:
+
+- Asynchronous processing
+- Workload isolation
+- Fault tolerance
+- Retry logic
+
+Each uploaded video creates:
+
+- Frame Analysis Job
+
+---
+
+## 3.5 Frame Extraction Service
+
+Performs:
+
+- Video decoding
+- Frame sampling
+- Motion vector analysis
+- Temporal segmentation
+
+Output:
+
+- Frame batch sets for detection modules
+
+---
+
+## 3.6 Detection Pipeline
+
+Each frame passes through:
+
+### Deepfake Detection
+Detects:
+- GAN artifacts
+- Face synthesis
+- Texture inconsistencies
+
+### Replay Detection
+Detects:
+- Screen re-recording
+- Display flicker patterns
+- Temporal duplication
+
+### Injection Detection
+Detects:
+- Overlay attacks
+- Virtual camera feeds
+
+### Face Swap Detection
+Detects:
+- Landmark drift
+- Identity mismatch
+- Motion mismatch
+
+### Metadata Integrity
+Checks:
+- Codec mismatch
+- Timestamp anomalies
+- Re-encoding traces
+
+---
+
+## 3.7 Frame Integrity Aggregator
+
+Aggregates:
+
+- Per-frame detection results
+- Temporal manipulation clusters
+- Confidence intervals
+
+Produces:
+
+- Frame-level integrity map
+
+---
+
+## 3.8 Fraud Risk Scoring Engine
+
+Calculates:
+
+- Global authenticity score
+- Risk probability
+- Fraud classification
+
+Example outputs:
+
+- VERIFIED
+- SUSPICIOUS
+- HIGH_RISK
+
+---
+
+## 3.9 Result Store
+
+Persists:
+
+- Session outcome
+- Frame tampering timeline
+- Detection flags
+- Risk score
+- Audit metadata
+
+---
+
+## 3.10 Reporting API
+
+Provides:
+
+- Session status endpoint
+- Final decision endpoint
+- Fraud indicators
+- Timeline of suspected manipulation
+
+Supports:
+
+- Polling
+- Webhook callback delivery
+
+---
+
+# 4. Processing Flow
+
+1. Client initiates verification session
+2. Client uploads identity video
+3. Upload service stores video
+4. Processing job enqueued
+5. Frames extracted
+6. Detection pipeline executed
+7. Frame integrity aggregated
+8. Fraud risk score calculated
+9. Results stored
+10. Client notified via API/Webhook
+
+---
+
+# 5. Security & Compliance Controls
+
+- Encrypted data storage
+- Session-based processing isolation
+- Audit logging
+- Access control
+- Retention policy enforcement
+- Data minimization
+- Secure upload channels
+
+---
+
+# 6. Scalability Considerations
+
+- Stateless API layer
+- Horizontal scaling of detection workers
+- Queue-based processing
+- Independent microservices
+- Storage decoupling
+
+---
+
+# 7. Reliability & Observability
+
+- Processing retries
+- Failure isolation
+- Health monitoring
+- Latency tracking
+- Detection accuracy logging
+- Session traceability
+
+---
+
+# 8. External Integration Model
+
+Supports:
+
+- REST-based API
+- Session-based verification
+- Async decision delivery
+- Webhook result callbacks
+
+---
+
+# 9. Output Format
+
+Verification response includes:
+
+- Authenticity Score
+- Fraud Risk Level
+- Detection Flags
+- Frame Tampering Timeline
+- Session Identifier
+- Processing Timestamp

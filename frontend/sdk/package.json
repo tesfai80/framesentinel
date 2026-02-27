@@ -1,0 +1,17 @@
+{
+  "name": "@framesentinel/sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK for FrameSentinel Video KYC Verification",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["kyc", "video", "verification", "fraud-detection"],
+  "author": "FrameSentinel",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

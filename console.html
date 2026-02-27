@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrameSentinel Console</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; }
+        .header { background: #fff; border-bottom: 1px solid #e9ecef; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: bold; color: #333; }
+        .nav { display: flex; gap: 20px; }
+        .nav a { color: #666; text-decoration: none; font-size: 14px; padding: 8px 16px; border-radius: 6px; }
+        .nav a:hover, .nav a.active { background: #f0f0f0; color: #333; }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 30px; }
+        .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h2 { margin-bottom: 20px; color: #333; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e9ecef; }
+        th { background: #f8f9fa; font-weight: 600; font-size: 13px; color: #666; }
+        tr:hover { background: #f8f9fa; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-primary:hover { background: #0056b3; }
+        .page { display: none; }
+        .page.active { display: block; }
+        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; width: 100%; margin-bottom: 15px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; }
+        .stat-value { font-size: 36px; font-weight: bold; margin: 10px 0; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🛡️ FrameSentinel Console</div>
+        <div class="nav">
+            <a href="#" onclick="showPage('sessions')" class="active">Sessions</a>
+            <a href="#" onclick="showPage('webhooks')">Webhooks</a>
+            <a href="#" onclick="showPage('audit')">Audit Logs</a>
+            <a href="#" onclick="showPage('settings')">Settings</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sessions Page -->
+        <div id="sessions" class="page active">
+            <div class="grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Sessions</div>
+                    <div class="stat-value" id="totalSessions">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Verified</div>
+                    <div class="stat-value" id="verifiedCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Suspicious</div>
+                    <div class="stat-value" id="suspiciousCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">High Risk</div>
+                    <div class="stat-value" id="highRiskCount">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Verification Sessions</h2>
+                <button class="btn btn-primary" onclick="loadSessions()">Refresh</button>
+                <table id="sessionsTable">
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>User ID</th>
+                            <th>State</th>
+                            <th>Risk Level</th>
+                            <th>Score</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Webhooks Page -->
+        <div id="webhooks" class="page">
+            <div class="card">
+                <h2>Webhook Delivery Logs</h2>
+                <button class="btn btn-primary" onclick="loadWebhooks()">Refresh</button>
+                <table id="webhooksTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Session ID</th>
+                            <th>URL</th>
+                            <th>Status</th>
+                            <th>Retries</th>
+                            <th>Success</th>
+                            <th>Delivered</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Audit Logs Page -->
+        <div id="audit" class="page">
+            <div class="card">
+                <h2>Audit Logs</h2>
+                <button class="btn btn-primary" onclick="loadAuditLogs()">Refresh</button>
+                <table id="auditTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Resource</th>
+                            <th>IP Address</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings" class="page">
+            <div class="card">
+                <h2>Tenant Settings</h2>
+                <form id="settingsForm" onsubmit="saveSettings(event)">
+                    <div class="form-group">
+                        <label>Verified Threshold</label>
+                        <input type="number" id="verifiedThreshold" step="0.01" min="0" max="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Suspicious Threshold</label>
+                        <input type="number" id="suspiciousThreshold" step="0.01" min="0" max="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Retention Days</label>
+                        <input type="number" id="retentionDays" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Video Size (MB)</label>
+                        <input type="number" id="maxVideoSize" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Webhook URL</label>
+                        <input type="url" id="webhookUrl" placeholder="https://your-webhook.com/endpoint">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="webhookEnabled"> Enable Webhook
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const API_KEY = 'dev-api-key-12345';
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (pageId === 'sessions') loadSessions();
+            if (pageId === 'webhooks') loadWebhooks();
+            if (pageId === 'audit') loadAuditLogs();
+            if (pageId === 'settings') loadSettings();
+        }
+
+        async function loadSessions() {
+            try {
+                const response = await fetch(`${API_URL}/api/v1/sessions`, {
+                    headers: { 'X-API-Key': API_KEY }
+                });
+                const sessions = await response.json();
+
+                let verified = 0, suspicious = 0, highRisk = 0;
+                
+                const tbody = document.querySelector('#sessionsTable tbody');
+                tbody.innerHTML = sessions.map(s => {
+                    // Get result for each session
+                    fetch(`${API_URL}/api/v1/sessions/${s.session_id}/result`, {
+                        headers: { 'X-API-Key': API_KEY }
+                    }).then(r => r.json()).then(result => {
+                        if (result.risk_level === 'VERIFIED') verified++;
+                        if (result.risk_level === 'SUSPICIOUS') suspicious++;
+                        if (result.risk_level === 'HIGH_RISK') highRisk++;
+                        
+                        document.getElementById('verifiedCount').textContent = verified;
+                        document.getElementById('suspiciousCount').textContent = suspicious;
+                        document.getElementById('highRiskCount').textContent = highRisk;
+                    });
+
+                    return `
+                        <tr>
+                            <td>${s.session_id.slice(0, 8)}...</td>
+                            <td>${s.user_id}</td>
+                            <td><span class="badge badge-info">${s.state}</span></td>
+                            <td id="risk-${s.session_id}">-</td>
+                            <td id="score-${s.session_id}">-</td>
+                            <td>${new Date(s.created_at).toLocaleString()}</td>
+                            <td><button class="btn btn-primary" onclick="viewSession('${s.session_id}')">View</button></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                document.getElementById('totalSessions').textContent = sessions.length;
+
+                // Load results for each session
+                sessions.forEach(async s => {
+                    try {
+                        const result = await fetch(`${API_URL}/api/v1/sessions/${s.session_id}/result`, {
+                            headers: { 'X-API-Key': API_KEY }
+                        }).then(r => r.json());
+
+                        if (result.risk_level) {
+                            const riskBadge = {
+                                'VERIFIED': 'badge-success',
+                                'SUSPICIOUS': 'badge-warning',
+                                'HIGH_RISK': 'badge-danger'
+                            }[result.risk_level] || 'badge-info';
+
+                            document.getElementById(`risk-${s.session_id}`).innerHTML = 
+                                `<span class="badge ${riskBadge}">${result.risk_level}</span>`;
+                            document.getElementById(`score-${s.session_id}`).textContent = 
+                                result.authenticity_score ? Math.round(result.authenticity_score * 100) + '%' : '-';
+                        }
+                    } catch (e) {}
+                });
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+            }
+        }
+
+        async function viewSession(sessionId) {
+            try {
+                const result = await fetch(`${API_URL}/api/v1/sessions/${sessionId}/result`, {
+                    headers: { 'X-API-Key': API_KEY }
+                }).then(r => r.json());
+
+                alert(JSON.stringify(result, null, 2));
+            } catch (error) {
+                alert('Error loading session details');
+            }
+        }
+
+        async function loadWebhooks() {
+            try {
+                const response = await fetch(`${API_URL}/api/v1/webhooks/logs`, {
+                    headers: { 'X-API-Key': API_KEY }
+                });
+                const logs = await response.json();
+
+                const tbody = document.querySelector('#webhooksTable tbody');
+                tbody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>${log.id}</td>
+                        <td>${log.session_id.slice(0, 8)}...</td>
+                        <td>${log.url}</td>
+                        <td>${log.status_code || '-'}</td>
+                        <td>${log.retries}</td>
+                        <td><span class="badge ${log.success ? 'badge-success' : 'badge-danger'}">${log.success ? 'Yes' : 'No'}</span></td>
+                        <td>${log.delivered_at ? new Date(log.delivered_at).toLocaleString() : '-'}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading webhooks:', error);
+            }
+        }
+
+        async function loadAuditLogs() {
+            try {
+                const response = await fetch(`${API_URL}/api/v1/audit/logs`, {
+                    headers: { 'X-API-Key': API_KEY }
+                });
+                const logs = await response.json();
+
+                const tbody = document.querySelector('#auditTable tbody');
+                tbody.innerHTML = logs.map(log => `
+                    <tr>
+                        <td>${log.id}</td>
+                        <td>${log.user_id}</td>
+                        <td>${log.action}</td>
+                        <td>${log.resource}</td>
+                        <td>${log.ip_address || '-'}</td>
+                        <td>${new Date(log.timestamp).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading audit logs:', error);
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await fetch(`${API_URL}/api/v1/tenant/settings`, {
+                    headers: { 'X-API-Key': API_KEY }
+                });
+                const settings = await response.json();
+
+                document.getElementById('verifiedThreshold').value = settings.verified_threshold;
+                document.getElementById('suspiciousThreshold').value = settings.suspicious_threshold;
+                document.getElementById('retentionDays').value = settings.retention_days;
+                document.getElementById('maxVideoSize').value = settings.max_video_size_mb;
+                document.getElementById('webhookUrl').value = settings.webhook_url || '';
+                document.getElementById('webhookEnabled').checked = settings.webhook_enabled;
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        async function saveSettings(event) {
+            event.preventDefault();
+            
+            const settings = {
+                verified_threshold: parseFloat(document.getElementById('verifiedThreshold').value),
+                suspicious_threshold: parseFloat(document.getElementById('suspiciousThreshold').value),
+                retention_days: parseInt(document.getElementById('retentionDays').value),
+                max_video_size_mb: parseInt(document.getElementById('maxVideoSize').value),
+                webhook_url: document.getElementById('webhookUrl').value || null,
+                webhook_enabled: document.getElementById('webhookEnabled').checked
+            };
+
+            try {
+                await fetch(`${API_URL}/api/v1/tenant/settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-API-Key': API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(settings)
+                });
+
+                alert('Settings saved successfully!');
+            } catch (error) {
+                alert('Error saving settings: ' + error.message);
+            }
+        }
+
+        // Load initial data
+        loadSessions();
+    </script>
+</body>
+</html>
