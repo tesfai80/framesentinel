@@ -145,8 +145,6 @@ export default function UsersPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid #374151' }}>
-              <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>ID</th>
-              <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Username</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Email</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Role</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Tenant</th>
@@ -157,9 +155,7 @@ export default function UsersPage() {
           <tbody>
             {users.map((user) => (
               <tr key={user.id} style={{ borderBottom: '1px solid #374151' }}>
-                <td style={{ padding: '12px', fontSize: '13px', color: '#e8eaed' }}>{user.id}</td>
-                <td style={{ padding: '12px', fontSize: '13px', fontWeight: '600', color: '#e8eaed' }}>{user.username}</td>
-                <td style={{ padding: '12px', fontSize: '13px', color: '#e8eaed' }}>{user.email}</td>
+                <td style={{ padding: '12px', fontSize: '13px', fontWeight: '600', color: '#e8eaed' }}>{user.email}</td>
                 <td style={{ padding: '12px' }}>
                   <span style={{
                     padding: '4px 8px',
@@ -298,24 +294,6 @@ export default function UsersPage() {
             <h2 style={{ fontSize: '24px', marginBottom: '20px', color: '#e8eaed' }}>Add New User</h2>
             
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>Username</label>
-              <input
-                type="text"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  background: '#2d3548',
-                  color: '#e8eaed',
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>Email</label>
               <input
                 type="email"
@@ -430,24 +408,6 @@ export default function UsersPage() {
           }}>
             <h2 style={{ fontSize: '24px', marginBottom: '20px', color: '#e8eaed' }}>Edit User</h2>
             
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>Username</label>
-              <input
-                type="text"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  background: '#2d3548',
-                  color: '#e8eaed',
-                }}
-              />
-            </div>
-
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>Email</label>
               <input

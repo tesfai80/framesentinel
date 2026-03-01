@@ -1,9 +1,10 @@
 'use client';
 import { useState } from 'react';
-import { Shield, Mail, Lock, User, Building, ArrowRight, Check } from 'lucide-react';
+import { Shield, Mail, Lock, User, Building, ArrowRight, Check, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { CustomSelect } from '../components/CustomSelect';
 import { useIsMobile } from '../utils/useIsMobile';
+import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -14,17 +15,58 @@ export default function SignUpPage() {
     plan: 'starter',
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const isMobile = useIsMobile();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     
-    // TODO: Integrate with backend API
-    setTimeout(() => {
-      alert('Sign up successful! Check your email to verify your account.');
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          role: 'USER',
+          tenant_id: formData.company.toLowerCase().replace(/\s+/g, '-'),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || 'Registration failed');
+      }
+
+      alert('Sign up successful! Redirecting to dashboard...');
+      
+      // Auto-login after registration
+      const loginResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      if (loginResponse.ok) {
+        const loginData = await loginResponse.json();
+        localStorage.setItem('user', JSON.stringify(loginData.user));
+        localStorage.setItem('token', loginData.token);
+        const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || 'http://localhost:3001';
+        window.location.href = `${dashboardUrl}/dashboard`;
+      } else {
+        router.push('/login');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -58,6 +100,24 @@ export default function SignUpPage() {
         }}>
           No credit card required • 14-day free trial • Cancel anytime
         </p>
+
+        {error && (
+          <div style={{
+            padding: '12px 16px',
+            marginBottom: '20px',
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid #ef4444',
+            borderRadius: '8px',
+            fontSize: '14px',
+            color: '#ef4444',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}>
+            <AlertCircle size={16} />
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>

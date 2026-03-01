@@ -1,19 +1,42 @@
 'use client';
 import { useState } from 'react';
-import { Shield, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Shield, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      alert('Login successful!');
+    setError('');
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Invalid credentials');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token);
+      
+      // Redirect to Admin Dashboard after successful login
+      window.location.href = 'http://localhost:3001/dashboard';
+    } catch (err) {
+      setError('Invalid email or password');
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -36,6 +59,24 @@ export default function LoginPage() {
           <p style={{ fontSize: '16px', color: '#9ca3af', marginBottom: '32px', textAlign: 'center' }}>
             Sign in to your account
           </p>
+
+          {error && (
+            <div style={{
+              padding: '12px 16px',
+              marginBottom: '20px',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid #ef4444',
+              borderRadius: '8px',
+              fontSize: '14px',
+              color: '#ef4444',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}>
+              <AlertCircle size={16} />
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>
