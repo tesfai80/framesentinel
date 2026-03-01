@@ -1,0 +1,22 @@
+# Git & VS Code
+.git
+.gitignore
+.vscode
+.amazonq
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+
+*.db
+*.sqlite3
+
+# Frontend & Build Assets
+frontend/
+node_modules/
+admin-dashboard/
+marketing-site/
