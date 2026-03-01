@@ -104,6 +104,7 @@ export const buttonStyles = {
     background: theme.colors.background.elevated,
     color: theme.colors.text.primary,
     border: `1px solid ${theme.colors.border.default}`,
+    boxShadow: 'none',
   },
 };
 
