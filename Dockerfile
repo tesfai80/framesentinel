@@ -1,10 +1,10 @@
 # Use an official Python slim image
 FROM python:3.10-slim
 
-# Install system dependencies required for OpenCV and psycopg2
-# libgl1-mesa-glx and libglib2.0-0 are necessary for opencv-python to run in Docker
+# Install system dependencies required for OpenCV
+# We use libgl1 and libglib2.0-0 which are the current standards
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
