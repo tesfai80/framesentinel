@@ -42,7 +42,8 @@ export function Button({
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = buttonStyles[variant].boxShadow || '';
+        const styles = buttonStyles[variant] as any;
+        e.currentTarget.style.boxShadow = styles.boxShadow || '';
       }}
     >
       {icon}
