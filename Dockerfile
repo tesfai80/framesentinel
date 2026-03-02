@@ -6,7 +6,10 @@ FROM python:3.10-slim
 RUN apt-get update && apt-get install -y \
     libgl1 \
     libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+ && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -28,5 +31,4 @@ ENV PORT 8080
 # Run the FastAPI app directly with uvicorn
 # --host 0.0.0.0 is mandatory for Cloud Run
 # --port $PORT uses the dynamic port assigned by Google Cloud
-# Updated for Cloud Run deployment
 CMD uvicorn main:app --host 0.0.0.0 --port $PORT
