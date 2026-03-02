@@ -27,7 +27,11 @@ app.include_router(user_router)
 
 @app.on_event("startup")
 async def startup_event():
-    init_db()
+    try:
+        init_db()
+        print("✅ DB initialized")
+    except Exception as e:
+        print("❌ DB init failed:", e)
 
 @app.get("/")
 async def root():
