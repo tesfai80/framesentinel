@@ -30,5 +30,5 @@ ENV PORT 8080
 
 # Run the FastAPI app directly with uvicorn
 # --host 0.0.0.0 is mandatory for Cloud Run
-# --port 8080 is the Cloud Run standard port
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+# --port $PORT uses the dynamic port assigned by Cloud Run
+CMD exec uvicorn main:app --host 0.0.0.0 --port $PORT
