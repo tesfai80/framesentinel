@@ -31,7 +31,8 @@ export default function LoginPage() {
       localStorage.setItem('token', data.token);
       
       // Redirect to Admin Dashboard after successful login
-      window.location.href = 'http://localhost:3001/dashboard';
+      const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || 'http://localhost:3001';
+      window.location.href = `${dashboardUrl}/dashboard`;
     } catch (err) {
       setError('Invalid email or password');
     } finally {
