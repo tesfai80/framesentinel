@@ -28,4 +28,5 @@ ENV PORT 8080
 # Run the FastAPI app directly with uvicorn
 # --host 0.0.0.0 is mandatory for Cloud Run
 # --port $PORT uses the dynamic port assigned by Google Cloud
+# Updated for Cloud Run deployment
 CMD uvicorn main:app --host 0.0.0.0 --port $PORT
