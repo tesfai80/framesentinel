@@ -100,3 +100,43 @@ class TenantSettings(Base):
     face_swap_threshold = Column(Float, default=0.75)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class APIKey(Base):
+    __tablename__ = "api_keys"
+    
+    id = Column(String, primary_key=True)
+    tenant_id = Column(String, nullable=False)
+    key_hash = Column(String, nullable=False, unique=True)
+    key_prefix = Column(String, nullable=False)  # First 8 chars for display
+    name = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True)
+    last_used_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime)
+
+class UsageRecord(Base):
+    __tablename__ = "usage_records"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    tenant_id = Column(String, nullable=False)
+    session_id = Column(String, nullable=False)
+    api_key_id = Column(String, nullable=False)
+    video_duration_seconds = Column(Float)
+    processing_time_ms = Column(Integer)
+    cost_credits = Column(Float, default=1.0)  # 1 credit per video
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+class BillingAccount(Base):
+    __tablename__ = "billing_accounts"
+    
+    tenant_id = Column(String, primary_key=True)
+    stripe_customer_id = Column(String, unique=True)
+    stripe_subscription_id = Column(String)
+    plan = Column(String, default="free")  # free, starter, professional, enterprise
+    credits_balance = Column(Integer, default=100)  # Free tier: 100 videos
+    credits_used = Column(Integer, default=0)
+    billing_email = Column(String)
+    is_active = Column(Boolean, default=True)
+    trial_ends_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
