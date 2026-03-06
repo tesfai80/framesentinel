@@ -4,7 +4,6 @@ echo.
 
 gcloud run deploy framesentinel-worker ^
   --source . ^
-  --dockerfile Dockerfile.worker ^
   --region europe-west3 ^
   --project framesentinel ^
   --no-allow-unauthenticated ^
