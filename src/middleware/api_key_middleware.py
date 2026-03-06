@@ -23,6 +23,11 @@ class APIKeyMiddleware:
         
         request = Request(scope, receive)
         
+        # Skip CORS preflight requests
+        if request.method == "OPTIONS":
+            await self.app(scope, receive, send)
+            return
+        
         # Skip auth for public endpoints
         public_paths = [
             "/",
