@@ -88,7 +88,7 @@ export default function DocsPage() {
               marginBottom: '32px',
             }}>
               {`API_KEY=your-api-key-here
-API_URL=https://api.framesentinel.com/v1`}
+API_URL=https://framesentinel-341068003893.europe-west3.run.app`}
             </pre>
 
             <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#10b981', marginBottom: '16px' }}>2. Install SDK</h3>
@@ -133,7 +133,7 @@ API_URL=https://api.framesentinel.com/v1`}
 
 const client = new FrameSentinelClient({
   apiKey: 'your-api-key',
-  apiUrl: 'https://api.framesentinel.com/v1'
+  apiUrl: 'https://framesentinel-341068003893.europe-west3.run.app'
 });
 
 // Create verification session

@@ -10,7 +10,7 @@ import asyncio
 
 class VideoProcessor:
     def __init__(self):
-        self.frame_extractor = FrameExtractor(sample_rate=5)
+        self.frame_extractor = FrameExtractor(sample_rate=15)
         self.detection_pipeline = DetectionPipeline()
         self.risk_scorer = FraudRiskScorer()
     

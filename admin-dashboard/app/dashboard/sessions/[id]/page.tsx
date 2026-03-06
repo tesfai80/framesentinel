@@ -156,15 +156,15 @@ export default function SessionDetailPage() {
         onClick={() => router.back()}
         style={{
           padding: '8px 16px',
-          background: '#2d3548',
-          border: '1px solid #374151',
+          background: '#111827',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
           borderRadius: '6px',
           cursor: 'pointer',
           marginBottom: '20px',
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          color: '#e8eaed',
+          color: '#E5E7EB',
         }}
       >
         <ArrowLeft size={16} />
@@ -481,13 +481,13 @@ export default function SessionDetailPage() {
                 style={{
                   width: '100%',
                   padding: '12px',
-                  border: '1px solid #374151',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   fontSize: '14px',
                   minHeight: '80px',
                   resize: 'vertical',
-                  background: '#2d3548',
-                  color: '#e8eaed',
+                  background: '#111827',
+                  color: '#E5E7EB',
                 }}
               />
             </div>

@@ -10,12 +10,12 @@ interface CardProps {
 
 export function Card({ children, style, hover = false, glow = 'none' }: CardProps) {
   const baseStyle: CSSProperties = {
-    background: 'rgba(26, 31, 46, 0.6)',
+    background: '#161B22',
     backdropFilter: 'blur(10px)',
     padding: '24px',
     borderRadius: '12px',
-    border: `1px solid ${glow === 'none' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.4)'}`,
-    boxShadow: glow !== 'none' ? theme.shadows.glow[glow] : theme.shadows.md,
+    border: `1px solid rgba(16, 185, 129, 0.2)`,
+    boxShadow: glow !== 'none' ? theme.shadows.glow[glow] : 'none',
     transition: 'all 0.2s',
     ...style,
   };

@@ -12,20 +12,20 @@ body {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
-  background: linear-gradient(135deg, #0a1f0f 0%, #0f1419 50%, #1a1f2e 100%);
+  background: #0B0F14;
   background-attachment: fixed;
-  color: #e8eaed;
+  color: #E5E7EB;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 a {
-  color: #10b981;
+  color: #10B981;
   text-decoration: none;
 }
 
 a:hover {
-  color: #34d399;
+  color: #22C55E;
 }
 
 select {
@@ -36,35 +36,35 @@ select {
 }
 
 select option {
-  background-color: #1a1f2e;
-  color: #e8eaed;
+  background-color: #161B22;
+  color: #E5E7EB;
   padding: 10px 14px;
   font-size: 14px;
   border: none;
 }
 
 select option:hover {
-  background-color: #252b3b;
-  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10B981;
 }
 
 select option:checked {
-  background: linear-gradient(0deg, #252b3b 0%, #252b3b 100%);
-  background-color: #252b3b;
-  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10B981;
   font-weight: 600;
 }
 
 /* Disable default blue highlight */
 select:focus option:checked {
-  background: #252b3b;
-  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10B981;
 }
 
 /* For Windows/Chrome */
 select option:checked:before {
   content: "✓ ";
-  color: #10b981;
+  color: #10B981;
   font-weight: bold;
   margin-right: 8px;
 }
@@ -75,14 +75,14 @@ select option:checked:before {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1f2e;
+  background: #161B22;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #374151;
+  background: rgba(16, 185, 129, 0.3);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+  background: rgba(16, 185, 129, 0.5);
 }

@@ -84,27 +84,27 @@ export default function UsersPage() {
       <h1 style={{ fontSize: '32px', marginBottom: '30px', color: '#e8eaed' }}>Users & Roles</h1>
 
       <div style={{
-        background: '#1a1f2e',
+        background: '#161B22',
         padding: '24px',
         borderRadius: '12px',
-        border: '1px solid #374151',
+        border: '1px solid rgba(16, 185, 129, 0.2)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
         marginBottom: '20px',
       }}>
         <h2 style={{ fontSize: '20px', marginBottom: '20px', color: '#e8eaed' }}>Analyst Activity</h2>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-          <div style={{ padding: '20px', border: '2px solid #10b981', borderRadius: '8px', background: '#0f1419' }}>
+          <div style={{ padding: '20px', border: '2px solid #10b981', borderRadius: '8px', background: '#161B22' }}>
             <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px' }}>Reviews Today</div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>24</div>
           </div>
 
-          <div style={{ padding: '20px', border: '2px solid #10b981', borderRadius: '8px', background: '#0f1419' }}>
+          <div style={{ padding: '20px', border: '2px solid #10b981', borderRadius: '8px', background: '#161B22' }}>
             <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px' }}>Approval Rate</div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>87%</div>
           </div>
 
-          <div style={{ padding: '20px', border: '2px solid #f59e0b', borderRadius: '8px', background: '#0f1419' }}>
+          <div style={{ padding: '20px', border: '2px solid #f59e0b', borderRadius: '8px', background: '#161B22' }}>
             <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px' }}>Escalations</div>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>3</div>
           </div>
@@ -112,10 +112,10 @@ export default function UsersPage() {
       </div>
 
       <div style={{
-        background: '#1a1f2e',
+        background: '#161B22',
         padding: '24px',
         borderRadius: '12px',
-        border: '1px solid #374151',
+        border: '1px solid rgba(16, 185, 129, 0.2)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
         marginBottom: '20px',
       }}>
@@ -144,7 +144,7 @@ export default function UsersPage() {
 
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ borderBottom: '2px solid #374151' }}>
+            <tr style={{ borderBottom: '2px solid rgba(16, 185, 129, 0.2)' }}>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Email</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Role</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Tenant</th>
@@ -154,19 +154,32 @@ export default function UsersPage() {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id} style={{ borderBottom: '1px solid #374151' }}>
+              <tr key={user.id} style={{ 
+                borderBottom: '1px solid rgba(16, 185, 129, 0.2)',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
                 <td style={{ padding: '12px', fontSize: '13px', fontWeight: '600', color: '#e8eaed' }}>{user.email}</td>
                 <td style={{ padding: '12px' }}>
                   <span style={{
-                    padding: '4px 8px',
-                    borderRadius: '4px',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
                     fontSize: '12px',
-                    background: user.role === 'ADMIN' ? 'rgba(6, 182, 212, 0.1)' : 
-                               user.role === 'ANALYST' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(156, 163, 175, 0.1)',
-                    color: user.role === 'ADMIN' ? '#06b6d4' : 
-                           user.role === 'ANALYST' ? '#f59e0b' : '#9ca3af',
-                    border: `1px solid ${user.role === 'ADMIN' ? '#06b6d4' : user.role === 'ANALYST' ? '#f59e0b' : '#9ca3af'}`,
+                    fontWeight: '600',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    background: user.role === 'ADMIN' ? 'rgba(16, 185, 129, 0.1)' : 
+                               user.role === 'ANALYST' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                    color: user.role === 'ADMIN' ? '#10B981' : 
+                           user.role === 'ANALYST' ? '#F59E0B' : '#6B7280',
+                    border: `1px solid ${user.role === 'ADMIN' ? '#10B981' : user.role === 'ANALYST' ? '#F59E0B' : '#6B7280'}`,
                   }}>
+                    {user.role === 'ADMIN' && <Crown size={14} />}
+                    {user.role === 'ANALYST' && <SearchIcon size={14} />}
+                    {user.role === 'VIEWER' && <Eye size={14} />}
                     {user.role}
                   </span>
                 </td>
@@ -174,43 +187,60 @@ export default function UsersPage() {
                 <td style={{ padding: '12px', fontSize: '13px', color: '#9ca3af' }}>
                   {new Date(user.created_at).toLocaleDateString()}
                 </td>
-                <td style={{ padding: '12px' }}>
+                <td style={{ padding: '12px', display: 'flex', gap: '8px' }}>
                   <button
                     onClick={() => openEditModal(user)}
                     style={{
                       padding: '6px 12px',
-                      background: '#2d3548',
-                      color: '#e8eaed',
-                      border: 'none',
+                      background: '#1F2937',
+                      color: '#9CA3AF',
+                      border: '1px solid rgba(16, 185, 129, 0.2)',
                       borderRadius: '6px',
                       cursor: 'pointer',
                       fontSize: '12px',
-                      marginRight: '8px',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#374151';
+                      e.currentTarget.style.color = '#E5E7EB';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#1F2937';
+                      e.currentTarget.style.color = '#9CA3AF';
                     }}
                   >
                     <Edit size={14} />
-                    <span>Edit</span>
                   </button>
                   <button
                     onClick={() => handleDeleteUser(user.id, user.email)}
                     style={{
                       padding: '6px 12px',
-                      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                      color: '#e8eaed',
-                      border: 'none',
+                      background: 'transparent',
+                      color: '#6B7280',
+                      border: '1px solid transparent',
                       borderRadius: '6px',
                       cursor: 'pointer',
                       fontSize: '12px',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+                      e.currentTarget.style.color = '#EF4444';
+                      e.currentTarget.style.borderColor = '#EF4444';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = '#6B7280';
+                      e.currentTarget.style.borderColor = 'transparent';
                     }}
                   >
                     <Trash2 size={14} />
-                    <span>Delete</span>
                   </button>
                 </td>
               </tr>
@@ -220,16 +250,16 @@ export default function UsersPage() {
       </div>
 
       <div style={{
-        background: '#1a1f2e',
+        background: '#161B22',
         padding: '24px',
         borderRadius: '12px',
-        border: '1px solid #374151',
+        border: '1px solid rgba(16, 185, 129, 0.2)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
       }}>
         <h2 style={{ fontSize: '20px', marginBottom: '20px', color: '#e8eaed' }}>Role Permissions</h2>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-          <div style={{ padding: '20px', border: '2px solid #10b981', borderRadius: '8px', background: '#0f1419' }}>
+          <div style={{ padding: '20px', border: '2px solid #10b981', borderRadius: '8px', background: '#161B22' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <Crown size={20} color="#10b981" />
               <h3 style={{ fontSize: '16px', color: '#10b981' }}>ADMIN</h3>
@@ -243,7 +273,7 @@ export default function UsersPage() {
             </ul>
           </div>
 
-          <div style={{ padding: '20px', border: '2px solid #f59e0b', borderRadius: '8px', background: '#0f1419' }}>
+          <div style={{ padding: '20px', border: '2px solid #f59e0b', borderRadius: '8px', background: '#161B22' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <SearchIcon size={20} color="#f59e0b" />
               <h3 style={{ fontSize: '16px', color: '#f59e0b' }}>ANALYST</h3>
@@ -256,7 +286,7 @@ export default function UsersPage() {
             </ul>
           </div>
 
-          <div style={{ padding: '20px', border: '2px solid #9ca3af', borderRadius: '8px', background: '#0f1419' }}>
+          <div style={{ padding: '20px', border: '2px solid #9ca3af', borderRadius: '8px', background: '#161B22' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <Eye size={20} color="#9ca3af" />
               <h3 style={{ fontSize: '16px', color: '#9ca3af' }}>VIEWER</h3>
@@ -285,7 +315,7 @@ export default function UsersPage() {
           zIndex: 1000,
         }}>
           <div style={{
-            background: '#1a1f2e',
+            background: '#161B22',
             padding: '30px',
             borderRadius: '12px',
             width: '500px',
@@ -302,10 +332,10 @@ export default function UsersPage() {
                 style={{
                   width: '100%',
                   padding: '10px',
-                  border: '1px solid #374151',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  background: '#2d3548',
+                  background: '#111827',
                   color: '#e8eaed',
                 }}
               />
@@ -319,10 +349,10 @@ export default function UsersPage() {
                 style={{
                   width: '100%',
                   padding: '10px',
-                  border: '1px solid #374151',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  background: '#2d3548',
+                  background: '#111827',
                   color: '#e8eaed',
                 }}
               >
@@ -341,10 +371,10 @@ export default function UsersPage() {
                 style={{
                   width: '100%',
                   padding: '10px',
-                  border: '1px solid #374151',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  background: '#2d3548',
+                  background: '#111827',
                   color: '#e8eaed',
                 }}
               />
@@ -355,8 +385,8 @@ export default function UsersPage() {
                 onClick={() => setShowAddModal(false)}
                 style={{
                   padding: '10px 20px',
-                  background: '#2d3548',
-                  border: '1px solid #374151',
+                  background: '#111827',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -400,7 +430,7 @@ export default function UsersPage() {
           zIndex: 1000,
         }}>
           <div style={{
-            background: '#1a1f2e',
+            background: '#161B22',
             padding: '30px',
             borderRadius: '12px',
             width: '500px',
@@ -417,10 +447,10 @@ export default function UsersPage() {
                 style={{
                   width: '100%',
                   padding: '10px',
-                  border: '1px solid #374151',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  background: '#2d3548',
+                  background: '#111827',
                   color: '#e8eaed',
                 }}
               />
@@ -434,10 +464,10 @@ export default function UsersPage() {
                 style={{
                   width: '100%',
                   padding: '10px',
-                  border: '1px solid #374151',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  background: '#2d3548',
+                  background: '#111827',
                   color: '#e8eaed',
                 }}
               >
@@ -456,10 +486,10 @@ export default function UsersPage() {
                 style={{
                   width: '100%',
                   padding: '10px',
-                  border: '1px solid #374151',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   fontSize: '14px',
-                  background: '#2d3548',
+                  background: '#111827',
                   color: '#e8eaed',
                 }}
               />
@@ -470,8 +500,8 @@ export default function UsersPage() {
                 onClick={() => { setShowEditModal(false); setSelectedUser(null); }}
                 style={{
                   padding: '10px 20px',
-                  background: '#2d3548',
-                  border: '1px solid #374151',
+                  background: '#111827',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   cursor: 'pointer',
                   fontSize: '14px',

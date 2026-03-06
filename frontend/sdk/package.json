@@ -4,14 +4,40 @@
   "description": "TypeScript SDK for FrameSentinel Video KYC Verification",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/framesentinel/sdk"
+  },
+  "homepage": "https://framesentinel.com",
+  "bugs": {
+    "url": "https://github.com/framesentinel/sdk/issues"
+  },
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "echo \"No tests yet\""
   },
-  "keywords": ["kyc", "video", "verification", "fraud-detection"],
+  "keywords": [
+    "kyc",
+    "video",
+    "verification",
+    "fraud-detection",
+    "deepfake",
+    "identity",
+    "authentication",
+    "security"
+  ],
   "author": "FrameSentinel",
   "license": "MIT",
   "devDependencies": {
     "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

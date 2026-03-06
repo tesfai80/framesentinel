@@ -38,7 +38,7 @@ export default function SessionsPage() {
       <h1 style={{ fontSize: '32px', marginBottom: '30px', color: '#e8eaed' }}>Sessions</h1>
 
       <div style={{
-        background: '#1a1f2e',
+        background: '#161B22',
         padding: '20px',
         borderRadius: '12px',
         border: '1px solid #374151',
@@ -102,7 +102,7 @@ export default function SessionsPage() {
       </div>
 
       <div style={{
-        background: '#1a1f2e',
+        background: '#161B22',
         padding: '24px',
         borderRadius: '12px',
         border: '1px solid #374151',

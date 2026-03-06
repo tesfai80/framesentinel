@@ -47,7 +47,7 @@ export default function ReviewQueuePage() {
       </p>
 
       <div style={{
-        background: 'rgba(26, 31, 46, 0.6)',
+        background: '#161B22',
         backdropFilter: 'blur(10px)',
         padding: '24px',
         borderRadius: '12px',

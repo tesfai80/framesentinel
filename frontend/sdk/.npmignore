@@ -3,3 +3,6 @@ tsconfig.json
 *.ts
 !*.d.ts
 node_modules/
+example.ts
+.git
+.gitignore

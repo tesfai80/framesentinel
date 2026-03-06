@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, BackgroundTasks, Request
 from sqlalchemy.orm import Session
 from src.config.database import get_db
 from src.api.auth import verify_api_key
+from src.middleware.api_key_middleware import get_tenant_from_request
 from src.models.schemas import (
     SessionCreateRequest, SessionCreateResponse, UploadResponse, VerificationResponse
 )
 from src.models.database import VerificationSession, VerificationResult, SessionState
-from src.services.video_processor import VideoProcessor
+from src.services.background_processor import background_processor
 from src.config.settings import settings
 import uuid
 import os
@@ -15,8 +16,12 @@ import shutil
 router = APIRouter(prefix="/api/v1", dependencies=[Depends(verify_api_key)])
 
 @router.get("/sessions")
-async def list_sessions(db: Session = Depends(get_db)):
-    sessions = db.query(VerificationSession).order_by(
+async def list_sessions(request: Request, db: Session = Depends(get_db)):
+    tenant_id = get_tenant_from_request(request)
+    
+    sessions = db.query(VerificationSession).filter(
+        VerificationSession.tenant_id == tenant_id
+    ).order_by(
         VerificationSession.created_at.desc()
     ).limit(100).all()
     
@@ -32,13 +37,16 @@ async def list_sessions(db: Session = Depends(get_db)):
     ]
 
 @router.post("/sessions", response_model=SessionCreateResponse)
-async def create_session(request: SessionCreateRequest, db: Session = Depends(get_db)):
+async def create_session(request: Request, req_body: SessionCreateRequest, db: Session = Depends(get_db)):
+    tenant_id = get_tenant_from_request(request)
+    
     session_id = str(uuid.uuid4())
     session = VerificationSession(
         session_id=session_id,
-        user_id=request.user_id,
+        user_id=req_body.user_id,
+        tenant_id=tenant_id,
         state=SessionState.CREATED,
-        device_metadata=request.device_metadata
+        device_metadata=req_body.device_metadata
     )
     db.add(session)
     db.commit()
@@ -53,12 +61,15 @@ async def create_session(request: SessionCreateRequest, db: Session = Depends(ge
 @router.post("/sessions/{session_id}/upload", response_model=UploadResponse)
 async def upload_video(
     session_id: str,
-    background_tasks: BackgroundTasks,
+    request: Request,
     video: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
+    tenant_id = get_tenant_from_request(request)
+    
     session = db.query(VerificationSession).filter(
-        VerificationSession.session_id == session_id
+        VerificationSession.session_id == session_id,
+        VerificationSession.tenant_id == tenant_id
     ).first()
     
     if not session:
@@ -81,8 +92,7 @@ async def upload_video(
     session.state = SessionState.UPLOADED
     db.commit()
     
-    processor = VideoProcessor()
-    background_tasks.add_task(processor.process_video, session_id, video_path, db)
+    background_processor.enqueue(session_id, video_path)
     
     return UploadResponse(
         session_id=session_id,
@@ -91,9 +101,12 @@ async def upload_video(
     )
 
 @router.get("/sessions/{session_id}/result", response_model=VerificationResponse)
-async def get_result(session_id: str, db: Session = Depends(get_db)):
+async def get_result(session_id: str, request: Request, db: Session = Depends(get_db)):
+    tenant_id = get_tenant_from_request(request)
+    
     session = db.query(VerificationSession).filter(
-        VerificationSession.session_id == session_id
+        VerificationSession.session_id == session_id,
+        VerificationSession.tenant_id == tenant_id
     ).first()
     
     if not session:
@@ -128,9 +141,12 @@ async def get_result(session_id: str, db: Session = Depends(get_db)):
     )
 
 @router.get("/sessions/{session_id}/status")
-async def get_status(session_id: str, db: Session = Depends(get_db)):
+async def get_status(session_id: str, request: Request, db: Session = Depends(get_db)):
+    tenant_id = get_tenant_from_request(request)
+    
     session = db.query(VerificationSession).filter(
-        VerificationSession.session_id == session_id
+        VerificationSession.session_id == session_id,
+        VerificationSession.tenant_id == tenant_id
     ).first()
     
     if not session:

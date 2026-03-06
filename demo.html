@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #0b1220 50%, #020617 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -18,39 +18,42 @@
         .container { 
             max-width: 600px;
             width: 100%;
-            background: white;
+            background: #111827;
+            border: 1px solid rgba(34, 197, 94, 0.2);
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(34, 197, 94, 0.1);
         }
         h1 { 
-            color: #333;
+            color: #E5E7EB;
             margin-bottom: 10px;
             font-size: 28px;
             text-align: center;
         }
         .subtitle { 
-            color: #666;
+            color: #9CA3AF;
             margin-bottom: 30px;
             font-size: 14px;
             text-align: center;
         }
         .upload-area {
-            border: 2px dashed #667eea;
+            border: 2px dashed rgba(34, 197, 94, 0.3);
             border-radius: 12px;
             padding: 40px;
             text-align: center;
             margin-bottom: 20px;
             cursor: pointer;
             transition: all 0.3s;
+            background: rgba(34, 197, 94, 0.05);
         }
         .upload-area:hover {
-            background: #f8f9ff;
-            border-color: #764ba2;
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
         }
         .upload-area.dragover {
-            background: #f0f0ff;
-            border-color: #764ba2;
+            background: rgba(34, 197, 94, 0.15);
+            border-color: #22c55e;
         }
         input[type="file"] { display: none; }
         button {
@@ -65,12 +68,12 @@
             margin-bottom: 10px;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
             color: white;
         }
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.4);
         }
         button:disabled {
             opacity: 0.5;
@@ -78,7 +81,7 @@
         }
         .progress {
             height: 6px;
-            background: #e9ecef;
+            background: rgba(34, 197, 94, 0.1);
             border-radius: 3px;
             overflow: hidden;
             margin-bottom: 20px;
@@ -87,8 +90,9 @@
         .progress.active { display: block; }
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
             transition: width 0.3s;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
         }
         .status {
             padding: 15px;
@@ -99,11 +103,12 @@
             display: none;
         }
         .status.active { display: block; }
-        .status.info { background: #d1ecf1; color: #0c5460; }
-        .status.success { background: #d4edda; color: #155724; }
-        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .status.success { background: rgba(34, 197, 94, 0.1); color: #22C55E; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .status.error { background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); }
         .result {
-            background: #f8f9fa;
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.2);
             padding: 30px;
             border-radius: 12px;
             display: none;
@@ -115,15 +120,17 @@
             font-weight: bold;
             margin: 20px 0;
         }
-        .score.verified { color: #28a745; }
+        .score.verified { color: #22c55e; }
         .score.suspicious { color: #ffc107; }
         .score.high-risk { color: #dc3545; }
         .file-info {
-            background: #f8f9fa;
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.2);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 14px;
+            color: #9CA3AF;
             display: none;
         }
         .file-info.active { display: block; }
@@ -136,10 +143,10 @@
 
         <div class="upload-area" id="uploadArea">
             <p style="font-size: 48px; margin-bottom: 10px;">📹</p>
-            <p style="font-size: 16px; font-weight: 600; margin-bottom: 5px;">
+            <p style="font-size: 16px; font-weight: 600; margin-bottom: 5px; color: #E5E7EB;">
                 Click to select video or drag & drop
             </p>
-            <p style="font-size: 12px; color: #666;">
+            <p style="font-size: 12px; color: #9CA3AF;">
                 Supported: MP4, AVI, MOV, WEBM (max 100MB)
             </p>
             <input type="file" id="videoInput" accept="video/*">
@@ -159,8 +166,8 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:8000';
-        const API_KEY = 'dev-api-key-12345';
+        const API_URL = 'https://framesentinel-341068003893.europe-west3.run.app';
+        const API_KEY = 'd0b293dbf55cf7aa5c7beab48ed622378695fee513d315dea45e9eee378f7f84';
 
         const uploadArea = document.getElementById('uploadArea');
         const videoInput = document.getElementById('videoInput');
@@ -315,8 +322,8 @@
 
             result.innerHTML = `
                 <div class="score ${riskClass}">${scorePercent}%</div>
-                <h3>${riskText}</h3>
-                <p style="margin-top: 20px; color: #666; font-size: 14px;">
+                <h3 style="color: #E5E7EB;">${riskText}</h3>
+                <p style="margin-top: 20px; color: #9CA3AF; font-size: 14px;">
                     Session ID: ${data.session_id.slice(0, 8)}...
                 </p>
             `;

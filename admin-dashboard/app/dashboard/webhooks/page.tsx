@@ -40,7 +40,7 @@ export default function WebhooksPage() {
       <h1 style={{ fontSize: '32px', marginBottom: '30px', color: '#e8eaed' }}>Webhook Logs</h1>
 
       <div style={{
-        background: 'rgba(26, 31, 46, 0.6)',
+        background: '#161B22',
         backdropFilter: 'blur(10px)',
         padding: '24px',
         borderRadius: '12px',

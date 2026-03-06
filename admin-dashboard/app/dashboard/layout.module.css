@@ -1,0 +1,34 @@
+@media (max-width: 768px) {
+  .mobileHeader {
+    display: flex !important;
+  }
+  
+  .sidebar {
+    position: fixed !important;
+    top: 64px;
+    width: 80% !important;
+    height: calc(100vh - 64px);
+    z-index: 1000;
+    transition: left 0.3s;
+  }
+  
+  .sidebarOpen {
+    left: 0;
+  }
+  
+  .sidebarClosed {
+    left: -100%;
+  }
+  
+  .desktopLogo {
+    display: none !important;
+  }
+  
+  .mainContent {
+    padding: 16px !important;
+  }
+}
+
+.mobileHeader {
+  display: none;
+}

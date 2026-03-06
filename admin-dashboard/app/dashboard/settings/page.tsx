@@ -53,10 +53,10 @@ export default function SettingsPage() {
       <h1 style={{ fontSize: '32px', marginBottom: '30px', color: '#e8eaed' }}>Settings</h1>
 
       <div style={{
-        background: '#1a1f2e',
+        background: '#161B22',
         padding: '24px',
         borderRadius: '12px',
-        border: '1px solid #374151',
+        border: '1px solid rgba(16, 185, 129, 0.2)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
         marginBottom: '20px',
       }}>
@@ -67,14 +67,14 @@ export default function SettingsPage() {
 
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ borderBottom: '2px solid #374151' }}>
+            <tr style={{ borderBottom: '2px solid rgba(16, 185, 129, 0.2)' }}>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Score Range</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Risk Level</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Outcome</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderBottom: '1px solid #374151' }}>
+            <tr style={{ borderBottom: '1px solid rgba(16, 185, 129, 0.2)' }}>
               <td style={{ padding: '12px', fontSize: '14px', color: '#e8eaed' }}>0 - 60%</td>
               <td style={{ padding: '12px' }}>
                 <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid #ef4444' }}>
@@ -83,7 +83,7 @@ export default function SettingsPage() {
               </td>
               <td style={{ padding: '12px', fontSize: '14px', color: '#ef4444', fontWeight: '600' }}>Auto Reject</td>
             </tr>
-            <tr style={{ borderBottom: '1px solid #374151' }}>
+            <tr style={{ borderBottom: '1px solid rgba(16, 185, 129, 0.2)' }}>
               <td style={{ padding: '12px', fontSize: '14px', color: '#e8eaed' }}>61 - 80%</td>
               <td style={{ padding: '12px' }}>
                 <span style={{ padding: '4px 8px', borderRadius: '4px', fontSize: '12px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', border: '1px solid #f59e0b' }}>
@@ -106,10 +106,10 @@ export default function SettingsPage() {
       </div>
 
       <div style={{
-        background: '#1a1f2e',
+        background: '#161B22',
         padding: '24px',
         borderRadius: '12px',
-        border: '1px solid #374151',
+        border: '1px solid rgba(16, 185, 129, 0.2)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
         marginBottom: '20px',
       }}>
@@ -126,10 +126,10 @@ export default function SettingsPage() {
             style={{
               width: '100%',
               padding: '12px',
-              border: '1px solid #374151',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
               borderRadius: '8px',
               fontSize: '14px',
-              background: '#2d3548',
+              background: '#111827',
               color: '#e8eaed',
             }}
             placeholder="https://your-domain.com/webhook"
@@ -141,10 +141,10 @@ export default function SettingsPage() {
       </div>
 
       <div style={{
-        background: '#1a1f2e',
+        background: '#161B22',
         padding: '24px',
         borderRadius: '12px',
-        border: '1px solid #374151',
+        border: '1px solid rgba(16, 185, 129, 0.2)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
         marginBottom: '20px',
       }}>
@@ -158,92 +158,208 @@ export default function SettingsPage() {
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>
               Deepfake Threshold
             </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              max="1"
-              value={settings.deepfake_threshold}
-              onChange={(e) => setSettings({ ...settings, deepfake_threshold: parseFloat(e.target.value) })}
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                fontSize: '14px',
-                background: '#2d3548',
-                color: '#e8eaed',
-              }}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button
+                onClick={() => setSettings({ ...settings, deepfake_threshold: Math.max(0, settings.deepfake_threshold - 0.05) })}
+                style={{
+                  padding: '10px 16px',
+                  background: '#1F2937',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '6px',
+                  color: '#10B981',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >−</button>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max="1"
+                value={settings.deepfake_threshold}
+                onChange={(e) => setSettings({ ...settings, deepfake_threshold: parseFloat(e.target.value) })}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  background: '#111827',
+                  color: '#e8eaed',
+                  textAlign: 'center',
+                }}
+              />
+              <button
+                onClick={() => setSettings({ ...settings, deepfake_threshold: Math.min(1, settings.deepfake_threshold + 0.05) })}
+                style={{
+                  padding: '10px 16px',
+                  background: '#1F2937',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '6px',
+                  color: '#10B981',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >+</button>
+            </div>
           </div>
 
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>
               Replay Attack Threshold
             </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              max="1"
-              value={settings.replay_threshold}
-              onChange={(e) => setSettings({ ...settings, replay_threshold: parseFloat(e.target.value) })}
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                fontSize: '14px',
-                background: '#2d3548',
-                color: '#e8eaed',
-              }}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button
+                onClick={() => setSettings({ ...settings, replay_threshold: Math.max(0, settings.replay_threshold - 0.05) })}
+                style={{
+                  padding: '10px 16px',
+                  background: '#1F2937',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '6px',
+                  color: '#10B981',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >−</button>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max="1"
+                value={settings.replay_threshold}
+                onChange={(e) => setSettings({ ...settings, replay_threshold: parseFloat(e.target.value) })}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  background: '#111827',
+                  color: '#e8eaed',
+                  textAlign: 'center',
+                }}
+              />
+              <button
+                onClick={() => setSettings({ ...settings, replay_threshold: Math.min(1, settings.replay_threshold + 0.05) })}
+                style={{
+                  padding: '10px 16px',
+                  background: '#1F2937',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '6px',
+                  color: '#10B981',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >+</button>
+            </div>
           </div>
 
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>
               Injection Threshold
             </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              max="1"
-              value={settings.injection_threshold}
-              onChange={(e) => setSettings({ ...settings, injection_threshold: parseFloat(e.target.value) })}
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                fontSize: '14px',
-                background: '#2d3548',
-                color: '#e8eaed',
-              }}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button
+                onClick={() => setSettings({ ...settings, injection_threshold: Math.max(0, settings.injection_threshold - 0.05) })}
+                style={{
+                  padding: '10px 16px',
+                  background: '#1F2937',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '6px',
+                  color: '#10B981',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >−</button>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max="1"
+                value={settings.injection_threshold}
+                onChange={(e) => setSettings({ ...settings, injection_threshold: parseFloat(e.target.value) })}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  background: '#111827',
+                  color: '#e8eaed',
+                  textAlign: 'center',
+                }}
+              />
+              <button
+                onClick={() => setSettings({ ...settings, injection_threshold: Math.min(1, settings.injection_threshold + 0.05) })}
+                style={{
+                  padding: '10px 16px',
+                  background: '#1F2937',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '6px',
+                  color: '#10B981',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >+</button>
+            </div>
           </div>
 
           <div>
             <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>
               Face Swap Threshold
             </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              max="1"
-              value={settings.face_swap_threshold}
-              onChange={(e) => setSettings({ ...settings, face_swap_threshold: parseFloat(e.target.value) })}
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                fontSize: '14px',
-                background: '#2d3548',
-                color: '#e8eaed',
-              }}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button
+                onClick={() => setSettings({ ...settings, face_swap_threshold: Math.max(0, settings.face_swap_threshold - 0.05) })}
+                style={{
+                  padding: '10px 16px',
+                  background: '#1F2937',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '6px',
+                  color: '#10B981',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >−</button>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                max="1"
+                value={settings.face_swap_threshold}
+                onChange={(e) => setSettings({ ...settings, face_swap_threshold: parseFloat(e.target.value) })}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  background: '#111827',
+                  color: '#e8eaed',
+                  textAlign: 'center',
+                }}
+              />
+              <button
+                onClick={() => setSettings({ ...settings, face_swap_threshold: Math.min(1, settings.face_swap_threshold + 0.05) })}
+                style={{
+                  padding: '10px 16px',
+                  background: '#1F2937',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '6px',
+                  color: '#10B981',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >+</button>
+            </div>
           </div>
         </div>
       </div>

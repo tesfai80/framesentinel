@@ -5,7 +5,10 @@ from src.api.admin_routes import router as admin_router
 from src.api.auth_routes import router as auth_router
 from src.api.user_routes import router as user_router
 from src.api.api_key_routes import router as api_key_router
+from src.api.usage_routes import router as usage_router
+from src.api.billing_routes import router as billing_router
 from src.config.database import init_db
+from src.middleware.api_key_middleware import APIKeyMiddleware
 
 app = FastAPI(
     title="FrameSentinel API",
@@ -21,11 +24,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add API Key authentication middleware
+app.add_middleware(APIKeyMiddleware)
+
 app.include_router(router)
 app.include_router(admin_router)
 app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(api_key_router)
+app.include_router(usage_router)
+app.include_router(billing_router)
 
 @app.on_event("startup")
 async def startup_event():
@@ -51,6 +59,6 @@ if __name__ == "__main__":
     import uvicorn
     import os
 
-    port = int(os.environ.get("PORT", 8080))
+    port = int(os.environ.get("PORT", 8000))
 
     uvicorn.run(app, host="0.0.0.0", port=port)

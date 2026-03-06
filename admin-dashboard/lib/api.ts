@@ -70,4 +70,13 @@ export const api = {
       processing_time_avg: 2500,
     };
   },
+
+  // API Keys
+  getAPIKeys: () => fetchAPI('/api/v1/api-keys'),
+  createAPIKey: (data: { name: string; expires_in_days?: number }) => 
+    fetchAPI('/api/v1/api-keys', { method: 'POST', body: JSON.stringify(data) }),
+  revokeAPIKey: (keyId: string) => 
+    fetchAPI(`/api/v1/api-keys/${keyId}`, { method: 'DELETE' }),
+  getUsageStats: () => fetchAPI('/api/v1/api-keys/usage'),
+  getCredits: () => fetchAPI('/api/v1/usage/credits'),
 };

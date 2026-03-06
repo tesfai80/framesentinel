@@ -41,7 +41,6 @@ class DetectionPipeline:
         self.deepfake_detector = DeepfakeDetector()
         self.replay_detector = ReplayDetector()
         self.injection_detector = InjectionDetector()
-        self.face_swap_detector = FaceSwapDetector()
         self.metadata_checker = MetadataIntegrityChecker()
     
     def process_frame(self, frame_num: int, frame: np.ndarray) -> Dict:
@@ -49,8 +48,7 @@ class DetectionPipeline:
             "frame_number": frame_num,
             "deepfake": self.deepfake_detector.analyze(frame),
             "replay": self.replay_detector.analyze(frame),
-            "injection": self.injection_detector.analyze(frame),
-            "face_swap": self.face_swap_detector.analyze(frame)
+            "injection": self.injection_detector.analyze(frame)
         }
     
     def check_metadata(self, metadata: dict) -> Dict:
