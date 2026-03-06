@@ -2,7 +2,7 @@ import threading
 from queue import Queue
 from sqlalchemy.orm import Session
 from src.services.video_processor import VideoProcessor
-from src.database import SessionLocal
+from src.config.database import get_db, SessionLocal
 
 class BackgroundProcessor:
     def __init__(self):
