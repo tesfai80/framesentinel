@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, BackgroundTasks, Request
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
 from sqlalchemy.orm import Session
 from src.config.database import get_db
 from src.api.auth import verify_api_key
@@ -7,7 +7,7 @@ from src.models.schemas import (
     SessionCreateRequest, SessionCreateResponse, UploadResponse, VerificationResponse
 )
 from src.models.database import VerificationSession, VerificationResult, SessionState
-from src.services.background_processor import background_processor
+from src.services.cloud_tasks_service import cloud_tasks_service
 from src.config.settings import settings
 import uuid
 import os
@@ -92,12 +92,16 @@ async def upload_video(
     session.state = SessionState.UPLOADED
     db.commit()
     
-    background_processor.enqueue(session_id, video_path)
+    try:
+        cloud_tasks_service.enqueue_video_processing(session_id, video_path)
+    except Exception as e:
+        print(f"Failed to enqueue task: {e}")
+        raise HTTPException(status_code=500, detail="Failed to queue processing")
     
     return UploadResponse(
         session_id=session_id,
         state=SessionState.UPLOADED,
-        message="Video uploaded successfully, processing started"
+        message="Video uploaded successfully, processing queued"
     )
 
 @router.get("/sessions/{session_id}/result", response_model=VerificationResponse)
