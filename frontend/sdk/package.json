@@ -11,11 +11,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/framesentinel/sdk"
+    "url": "https://github.com/tesfai80/framesentinel-sdk"
   },
   "homepage": "https://framesentinel.com",
   "bugs": {
-    "url": "https://github.com/framesentinel/sdk/issues"
+    "url": "https://github.com/tesfai80/framesentinel-sdk/issues"
   },
   "scripts": {
     "build": "tsc",
