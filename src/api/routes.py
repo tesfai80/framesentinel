@@ -7,7 +7,7 @@ from src.models.schemas import (
     SessionCreateRequest, SessionCreateResponse, UploadResponse, VerificationResponse
 )
 from src.models.database import VerificationSession, VerificationResult, SessionState
-from src.services.cloud_tasks_service import cloud_tasks_service
+from src.services.background_processor import background_processor
 from src.config.settings import settings
 import uuid
 import os
@@ -92,16 +92,12 @@ async def upload_video(
     session.state = SessionState.UPLOADED
     db.commit()
     
-    try:
-        cloud_tasks_service.enqueue_video_processing(session_id, video_path)
-    except Exception as e:
-        print(f"Failed to enqueue task: {e}")
-        raise HTTPException(status_code=500, detail="Failed to queue processing")
+    background_processor.enqueue(session_id, video_path)
     
     return UploadResponse(
         session_id=session_id,
         state=SessionState.UPLOADED,
-        message="Video uploaded successfully, processing queued"
+        message="Video uploaded successfully, processing started"
     )
 
 @router.get("/sessions/{session_id}/result", response_model=VerificationResponse)

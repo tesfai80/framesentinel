@@ -6,13 +6,21 @@ from datetime import datetime, timedelta
 
 class CloudTasksService:
     def __init__(self):
-        self.client = tasks_v2.CloudTasksClient()
-        self.project = os.getenv("GCP_PROJECT", "framesentinel")
-        self.location = os.getenv("GCP_LOCATION", "europe-west3")
-        self.queue = os.getenv("TASK_QUEUE_NAME", "video-processing")
-        self.worker_url = os.getenv("WORKER_URL", "https://framesentinel-worker-341068003893.europe-west3.run.app/process")
+        try:
+            self.client = tasks_v2.CloudTasksClient()
+            self.project = os.getenv("GCP_PROJECT", "framesentinel")
+            self.location = os.getenv("GCP_LOCATION", "europe-west3")
+            self.queue = os.getenv("TASK_QUEUE_NAME", "video-processing")
+            self.worker_url = os.getenv("WORKER_URL", "https://framesentinel-worker-341068003893.europe-west3.run.app/process")
+            self.enabled = True
+        except Exception as e:
+            print(f"Cloud Tasks not available: {e}")
+            self.enabled = False
         
     def enqueue_video_processing(self, session_id: str, video_path: str):
+        if not self.enabled:
+            raise Exception("Cloud Tasks not configured")
+            
         parent = self.client.queue_path(self.project, self.location, self.queue)
         
         task = {
