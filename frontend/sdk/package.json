@@ -1,5 +1,5 @@
 {
-  "name": "@framesentinel/sdk",
+  "name": "framesentinel-sdk",
   "version": "1.0.0",
   "description": "TypeScript SDK for FrameSentinel Video KYC Verification",
   "main": "dist/index.js",
