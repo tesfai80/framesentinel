@@ -24,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Add API Key authentication middleware
+# Add API Key authentication middleware AFTER CORS
 app.add_middleware(APIKeyMiddleware)
 
 app.include_router(router)
@@ -39,9 +39,9 @@ app.include_router(billing_router)
 async def startup_event():
     try:
         init_db()
-        print("✅ DB initialized")
+        print("DB initialized")
     except Exception as e:
-        print("❌ DB init failed:", e)
+        print("DB init failed:", e)
 
 @app.get("/")
 async def root():
