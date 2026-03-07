@@ -49,10 +49,6 @@ async def root():
         "status": "operational"
     }
 
-@app.options("/api/v1/sessions")
-async def options_sessions():
-    return {}
-
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
