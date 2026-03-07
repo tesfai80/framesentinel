@@ -127,7 +127,7 @@ class APIKeyMiddleware:
 
 def get_tenant_from_request(request: Request) -> str:
     """Helper function to get tenant_id from request state"""
-    return getattr(request.state, "tenant_id", None)
+    return getattr(request.state, "tenant_id", "default")
 
 
 def get_api_key_from_request(request: Request) -> str:

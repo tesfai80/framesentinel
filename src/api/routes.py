@@ -33,7 +33,7 @@ async def options_status(session_id: str):
 
 @router.get("/sessions")
 async def list_sessions(request: Request, db: Session = Depends(get_db), _=Depends(verify_api_key)):
-    tenant_id = get_tenant_from_request(request)
+    tenant_id = get_tenant_from_request(request) or "default"
     
     sessions = db.query(VerificationSession).filter(
         VerificationSession.tenant_id == tenant_id
@@ -54,7 +54,7 @@ async def list_sessions(request: Request, db: Session = Depends(get_db), _=Depen
 
 @router.post("/sessions", response_model=SessionCreateResponse)
 async def create_session(request: Request, req_body: SessionCreateRequest, db: Session = Depends(get_db), _=Depends(verify_api_key)):
-    tenant_id = get_tenant_from_request(request)
+    tenant_id = get_tenant_from_request(request) or "default"
     
     session_id = str(uuid.uuid4())
     session = VerificationSession(
@@ -82,7 +82,7 @@ async def upload_video(
     db: Session = Depends(get_db),
     _=Depends(verify_api_key)
 ):
-    tenant_id = get_tenant_from_request(request)
+    tenant_id = get_tenant_from_request(request) or "default"
     
     session = db.query(VerificationSession).filter(
         VerificationSession.session_id == session_id,
@@ -119,7 +119,7 @@ async def upload_video(
 
 @router.get("/sessions/{session_id}/result", response_model=VerificationResponse)
 async def get_result(session_id: str, request: Request, db: Session = Depends(get_db), _=Depends(verify_api_key)):
-    tenant_id = get_tenant_from_request(request)
+    tenant_id = get_tenant_from_request(request) or "default"
     
     session = db.query(VerificationSession).filter(
         VerificationSession.session_id == session_id,
@@ -159,7 +159,7 @@ async def get_result(session_id: str, request: Request, db: Session = Depends(ge
 
 @router.get("/sessions/{session_id}/status")
 async def get_status(session_id: str, request: Request, db: Session = Depends(get_db), _=Depends(verify_api_key)):
-    tenant_id = get_tenant_from_request(request)
+    tenant_id = get_tenant_from_request(request) or "default"
     
     session = db.query(VerificationSession).filter(
         VerificationSession.session_id == session_id,
