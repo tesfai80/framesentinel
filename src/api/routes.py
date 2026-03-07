@@ -13,10 +13,10 @@ import uuid
 import os
 import shutil
 
-router = APIRouter(prefix="/api/v1", dependencies=[Depends(verify_api_key)])
+router = APIRouter(prefix="/api/v1")
 
 @router.get("/sessions")
-async def list_sessions(request: Request, db: Session = Depends(get_db)):
+async def list_sessions(request: Request, db: Session = Depends(get_db), _=Depends(verify_api_key)):
     tenant_id = get_tenant_from_request(request)
     
     sessions = db.query(VerificationSession).filter(
@@ -37,7 +37,7 @@ async def list_sessions(request: Request, db: Session = Depends(get_db)):
     ]
 
 @router.post("/sessions", response_model=SessionCreateResponse)
-async def create_session(request: Request, req_body: SessionCreateRequest, db: Session = Depends(get_db)):
+async def create_session(request: Request, req_body: SessionCreateRequest, db: Session = Depends(get_db), _=Depends(verify_api_key)):
     tenant_id = get_tenant_from_request(request)
     
     session_id = str(uuid.uuid4())
@@ -63,7 +63,8 @@ async def upload_video(
     session_id: str,
     request: Request,
     video: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _=Depends(verify_api_key)
 ):
     tenant_id = get_tenant_from_request(request)
     
@@ -101,7 +102,7 @@ async def upload_video(
     )
 
 @router.get("/sessions/{session_id}/result", response_model=VerificationResponse)
-async def get_result(session_id: str, request: Request, db: Session = Depends(get_db)):
+async def get_result(session_id: str, request: Request, db: Session = Depends(get_db), _=Depends(verify_api_key)):
     tenant_id = get_tenant_from_request(request)
     
     session = db.query(VerificationSession).filter(
@@ -141,7 +142,7 @@ async def get_result(session_id: str, request: Request, db: Session = Depends(ge
     )
 
 @router.get("/sessions/{session_id}/status")
-async def get_status(session_id: str, request: Request, db: Session = Depends(get_db)):
+async def get_status(session_id: str, request: Request, db: Session = Depends(get_db), _=Depends(verify_api_key)):
     tenant_id = get_tenant_from_request(request)
     
     session = db.query(VerificationSession).filter(
