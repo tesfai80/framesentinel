@@ -15,6 +15,22 @@ import shutil
 
 router = APIRouter(prefix="/api/v1")
 
+@router.options("/sessions")
+async def options_sessions():
+    return {}
+
+@router.options("/sessions/{session_id}/upload")
+async def options_upload(session_id: str):
+    return {}
+
+@router.options("/sessions/{session_id}/result")
+async def options_result(session_id: str):
+    return {}
+
+@router.options("/sessions/{session_id}/status")
+async def options_status(session_id: str):
+    return {}
+
 @router.get("/sessions")
 async def list_sessions(request: Request, db: Session = Depends(get_db), _=Depends(verify_api_key)):
     tenant_id = get_tenant_from_request(request)
