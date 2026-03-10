@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { DashboardStats, Session } from '@/types';
-import { CheckCircle, AlertTriangle, XCircle, TrendingUp, Clock, Search, Bell } from 'lucide-react';
+import { CheckCircle, AlertTriangle, XCircle, TrendingUp, Clock, Search } from 'lucide-react';
 import { theme } from '@/styles/theme';
 import { Card } from '@/components/Card';
 import { Loading } from '@/components/Loading';
@@ -10,6 +10,7 @@ import { Loading } from '@/components/Loading';
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentSessions, setRecentSessions] = useState<Session[]>([]);
+  const [webhookStats, setWebhookStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,12 +19,14 @@ export default function DashboardPage() {
 
   const loadData = async () => {
     try {
-      const [statsData, sessionsData] = await Promise.all([
+      const [statsData, sessionsData, webhookData] = await Promise.all([
         api.getStats(),
         api.getSessions({ limit: 5 }),
+        api.getWebhookStats(),
       ]);
       setStats(statsData);
       setRecentSessions(sessionsData);
+      setWebhookStats(webhookData);
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
     } finally {
@@ -37,7 +40,6 @@ export default function DashboardPage() {
 
   const suspiciousTrend = stats ? ((stats.suspicious / stats.total_sessions) * 100).toFixed(1) : '0';
   const manualReviewRate = stats ? ((stats.suspicious / stats.total_sessions) * 100).toFixed(1) : '0';
-  const webhookFailRate = '2.3'; // Mock for now
 
   return (
     <div>
@@ -120,19 +122,18 @@ export default function DashboardPage() {
         </Card>
 
         <Card>
-          <div style={{ fontSize: '14px', color: theme.colors.text.secondary, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Bell size={14} />
-            Webhook Fail Rate
-          </div>
+          <div style={{ fontSize: '14px', color: theme.colors.text.secondary, marginBottom: '8px' }}>Webhook Fail Rate</div>
           <div style={{ fontSize: '36px', fontWeight: 'bold', color: theme.colors.risk.high }}>
-            {webhookFailRate}%
+            {webhookStats?.fail_rate || 0}%
           </div>
         </Card>
+
       </div>
 
       {/* Recent Sessions */}
       <Card>
         <h2 style={{ fontSize: '20px', marginBottom: '20px', color: theme.colors.text.primary }}>Recent Sessions</h2>
+        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: `2px solid ${theme.colors.border.default}` }}>
@@ -190,6 +191,7 @@ export default function DashboardPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

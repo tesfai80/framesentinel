@@ -166,8 +166,8 @@
     </div>
 
     <script>
-        const API_URL = 'https://framesentinel-341068003893.europe-west3.run.app';
-        const API_KEY = 'fs_live_cWJOyoi1PYosSeII5U_-Nxd_4X7dW9c3EOj1Hz_eOV0';
+        const API_URL = 'http://localhost:8000';
+        const API_KEY = 'dev-api-key-12345';
 
         const uploadArea = document.getElementById('uploadArea');
         const videoInput = document.getElementById('videoInput');
@@ -260,7 +260,10 @@
 
                     xhr.onload = () => {
                         if (xhr.status === 200) resolve();
-                        else reject(new Error('Upload failed'));
+                        else {
+                            const error = JSON.parse(xhr.responseText);
+                            reject(new Error(error.detail || 'Upload failed'));
+                        }
                     };
 
                     xhr.onerror = () => reject(new Error('Network error'));

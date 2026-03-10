@@ -27,19 +27,20 @@ export function ConfirmDialog({ isOpen, title, message, onConfirm, onCancel }: C
       zIndex: 10000,
     }}>
       <div style={{
-        background: 'white',
+        background: '#161B22',
         borderRadius: '12px',
         padding: '24px',
         maxWidth: '400px',
         width: '90%',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+        border: '1px solid rgba(239, 68, 68, 0.3)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-          <AlertTriangle size={24} color="#dc3545" />
-          <h3 style={{ fontSize: '18px', fontWeight: '600', margin: 0 }}>{title}</h3>
+          <AlertTriangle size={24} color="#ef4444" />
+          <h3 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: '#e8eaed' }}>{title}</h3>
         </div>
         
-        <p style={{ color: '#666', fontSize: '14px', marginBottom: '24px', lineHeight: '1.5' }}>
+        <p style={{ color: '#9ca3af', fontSize: '14px', marginBottom: '24px', lineHeight: '1.5' }}>
           {message}
         </p>
         
@@ -48,12 +49,13 @@ export function ConfirmDialog({ isOpen, title, message, onConfirm, onCancel }: C
             onClick={onCancel}
             style={{
               padding: '10px 20px',
-              background: '#f0f0f0',
-              border: 'none',
+              background: '#111827',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
               fontWeight: '600',
+              color: '#e8eaed',
             }}
           >
             Cancel
@@ -62,8 +64,8 @@ export function ConfirmDialog({ isOpen, title, message, onConfirm, onCancel }: C
             onClick={onConfirm}
             style={{
               padding: '10px 20px',
-              background: '#dc3545',
-              color: 'white',
+              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+              color: '#e8eaed',
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',

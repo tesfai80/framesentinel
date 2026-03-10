@@ -5,9 +5,11 @@ import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
 import { confirm } from '@/components/ConfirmDialog';
 import { Loading } from '@/components/Loading';
+import { CustomSelect } from '@/components/CustomSelect';
 
 export default function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
+  const [analystActivity, setAnalystActivity] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -16,6 +18,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     loadUsers();
+    loadAnalystActivity();
   }, []);
 
   const loadUsers = async () => {
@@ -26,6 +29,15 @@ export default function UsersPage() {
       console.error('Failed to load users:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadAnalystActivity = async () => {
+    try {
+      const data = await api.getAnalystActivity();
+      setAnalystActivity(data);
+    } catch (error) {
+      console.error('Failed to load analyst activity:', error);
     }
   };
 
@@ -77,7 +89,13 @@ export default function UsersPage() {
     setShowEditModal(true);
   };
 
-  if (loading) return <Loading message="Loading users..." />;
+  if (loading) return (
+    <div style={{ textAlign: 'center', padding: '100px 20px' }}>
+      <div style={{ fontSize: '48px', marginBottom: '20px' }}>⚡</div>
+      <div style={{ fontSize: '18px', color: '#10b981', marginBottom: '10px' }}>Loading users...</div>
+      <div style={{ fontSize: '14px', color: '#9ca3af' }}>Fetching data from database</div>
+    </div>
+  );
 
   return (
     <div>
@@ -96,17 +114,17 @@ export default function UsersPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
           <div style={{ padding: '20px', border: '2px solid #10b981', borderRadius: '8px', background: '#161B22' }}>
             <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px' }}>Reviews Today</div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>24</div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>{analystActivity?.reviews_today || 0}</div>
           </div>
 
           <div style={{ padding: '20px', border: '2px solid #10b981', borderRadius: '8px', background: '#161B22' }}>
             <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px' }}>Approval Rate</div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>87%</div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>{analystActivity?.approval_rate || 0}%</div>
           </div>
 
           <div style={{ padding: '20px', border: '2px solid #f59e0b', borderRadius: '8px', background: '#161B22' }}>
             <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '8px' }}>Escalations</div>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>3</div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>{analystActivity?.escalations || 0}</div>
           </div>
         </div>
       </div>
@@ -348,17 +366,23 @@ export default function UsersPage() {
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 style={{
                   width: '100%',
-                  padding: '10px',
+                  padding: '10px 14px',
                   border: '1px solid rgba(16, 185, 129, 0.2)',
                   borderRadius: '8px',
                   fontSize: '14px',
                   background: '#111827',
                   color: '#e8eaed',
+                  cursor: 'pointer',
+                  appearance: 'none',
+                  backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'%2310b981\' d=\'M6 9L1 4h10z\'/%3E%3C/svg%3E")',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 12px center',
+                  paddingRight: '36px',
                 }}
               >
-                <option value="VIEWER">VIEWER</option>
-                <option value="ANALYST">ANALYST</option>
-                <option value="ADMIN">ADMIN</option>
+                <option value="VIEWER" style={{ background: '#161B22', color: '#E5E7EB', padding: '10px' }}>VIEWER</option>
+                <option value="ANALYST" style={{ background: '#161B22', color: '#E5E7EB', padding: '10px' }}>ANALYST</option>
+                <option value="ADMIN" style={{ background: '#161B22', color: '#E5E7EB', padding: '10px' }}>ADMIN</option>
               </select>
             </div>
 
@@ -458,23 +482,15 @@ export default function UsersPage() {
 
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>Role</label>
-              <select
+              <CustomSelect
                 value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid rgba(16, 185, 129, 0.2)',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  background: '#111827',
-                  color: '#e8eaed',
-                }}
-              >
-                <option value="VIEWER">VIEWER</option>
-                <option value="ANALYST">ANALYST</option>
-                <option value="ADMIN">ADMIN</option>
-              </select>
+                onChange={(value) => setFormData({ ...formData, role: value })}
+                options={[
+                  { value: 'VIEWER', label: 'VIEWER' },
+                  { value: 'ANALYST', label: 'ANALYST' },
+                  { value: 'ADMIN', label: 'ADMIN' },
+                ]}
+              />
             </div>
 
             <div style={{ marginBottom: '20px' }}>

@@ -66,10 +66,16 @@ export const api = {
       verified: statsData.risk_distribution?.verified || 0,
       suspicious: statsData.risk_distribution?.suspicious || 0,
       high_risk: statsData.risk_distribution?.high_risk || 0,
-      avg_score: 0.85,
-      processing_time_avg: 2500,
+      avg_score: statsData.avg_score || 0,
+      processing_time_avg: statsData.processing_time_avg || 0,
     };
   },
+
+  // Analyst Activity
+  getAnalystActivity: () => fetchAPI('/api/v1/admin/analyst-activity'),
+
+  // Webhook Stats
+  getWebhookStats: () => fetchAPI('/api/v1/admin/webhook-stats'),
 
   // API Keys
   getAPIKeys: () => fetchAPI('/api/v1/api-keys'),

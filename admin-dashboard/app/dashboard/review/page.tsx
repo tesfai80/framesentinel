@@ -21,8 +21,8 @@ export default function ReviewQueuePage() {
 
   const loadQueue = async () => {
     try {
-      const data = await api.getSessions({ risk_level: 'SUSPICIOUS', limit: 50 });
-      setSessions(data.filter((s: Session) => s.state === 'COMPLETED'));
+      const data = await api.getSessions({ limit: 50 });
+      setSessions(data.filter((s: Session) => s.risk_level === 'SUSPICIOUS' && s.state === 'COMPLETED'));
     } catch (error) {
       console.error('Failed to load review queue:', error);
     } finally {

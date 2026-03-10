@@ -3,12 +3,14 @@ import { Shield, Zap, Lock, CheckCircle, ArrowRight, Play, BarChart3, Globe } fr
 import Link from 'next/link';
 import { useIsMobile } from './utils/useIsMobile';
 import { MobileNav, DesktopNav } from './components/Navigation';
+import { StructuredData } from './components/StructuredData';
 
 export default function HomePage() {
   const isMobile = useIsMobile();
 
   return (
     <div>
+      <StructuredData />
       {isMobile ? <MobileNav /> : <DesktopNav />}
 
       <section style={{

@@ -8,24 +8,39 @@ export default function PricingPage() {
   const isMobile = useIsMobile();
   const plans = [
     {
-      name: 'Starter',
-      price: '$99',
+      name: 'Free',
+      price: '$0',
       period: '/month',
-      description: 'Perfect for startups and small teams',
+      description: 'Perfect for testing and small projects',
       features: [
-        '1,000 video verifications/month',
+        '200 video verifications/month',
+        'All 5 detection modules',
+        'API access',
+        'Email support',
+        '$0.02 per extra verification',
+      ],
+      cta: 'Get Started Free',
+      popular: false,
+    },
+    {
+      name: 'Starter',
+      price: '$19',
+      period: '/month',
+      description: 'For startups and small teams',
+      features: [
+        '2,000 video verifications/month',
         'All 5 detection modules',
         'API access',
         'Webhook notifications',
         'Email support',
-        '99.5% SLA',
+        '$0.015 per extra verification',
       ],
       cta: 'Start Free Trial',
       popular: false,
     },
     {
-      name: 'Professional',
-      price: '$499',
+      name: 'Growth',
+      price: '$59',
       period: '/month',
       description: 'For growing businesses',
       features: [
@@ -34,12 +49,27 @@ export default function PricingPage() {
         'Priority API access',
         'Webhook notifications',
         'Priority support',
-        '99.9% SLA',
-        'Custom integration support',
-        'Dedicated account manager',
+        '$0.01 per extra verification',
       ],
       cta: 'Start Free Trial',
       popular: true,
+    },
+    {
+      name: 'Pro',
+      price: '$149',
+      period: '/month',
+      description: 'For high-volume operations',
+      features: [
+        '50,000 video verifications/month',
+        'All 5 detection modules',
+        'Priority API access',
+        'Webhook notifications',
+        'Priority support',
+        '99.9% SLA',
+        '$0.008 per extra verification',
+      ],
+      cta: 'Start Free Trial',
+      popular: false,
     },
     {
       name: 'Enterprise',
@@ -47,14 +77,13 @@ export default function PricingPage() {
       period: '',
       description: 'For large-scale operations',
       features: [
-        'Unlimited verifications',
+        'Custom volume',
         'All 5 detection modules',
         'Dedicated infrastructure',
         'Custom SLA (up to 99.99%)',
         '24/7 phone support',
         'On-premise deployment option',
-        'Custom model training',
-        'Compliance assistance',
+        'Custom pricing',
       ],
       cta: 'Contact Sales',
       popular: false,
@@ -101,7 +130,7 @@ export default function PricingPage() {
           maxWidth: '1200px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: isMobile ? '24px' : '30px',
         }}>
           {plans.map((plan, idx) => (
@@ -257,7 +286,7 @@ export default function PricingPage() {
               },
               {
                 q: 'What if I exceed my plan limits?',
-                a: 'We\'ll notify you when you reach 80% of your limit. You can upgrade anytime or purchase additional verifications at $0.10 per video.',
+                a: 'We\'ll notify you when you reach 80% of your limit. You can upgrade anytime or pay for extra verifications at the per-verification rate for your plan.',
               },
             ].map((faq, idx) => (
               <div key={idx} style={{

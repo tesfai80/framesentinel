@@ -1,7 +1,8 @@
 'use client';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { BarChart3, Video, Search, Webhook, FileText, Settings, Users, LogOut, Key, Menu, X, Coins } from 'lucide-react';
+import { BarChart3, Video, Search, Webhook, FileText, Settings, Users, LogOut, Key, Menu, X, Coins, Building2 } from 'lucide-react';
 import { ToastContainer } from '@/components/Toast';
 import { ConfirmProvider } from '@/components/ConfirmDialog';
 import { FrameSentinelLogo } from '@/components/Logo';
@@ -46,16 +47,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { path: '/dashboard', label: 'Overview', icon: BarChart3 },
     { path: '/dashboard/sessions', label: 'Sessions', icon: Video },
     { path: '/dashboard/review', label: 'Review Queue', icon: Search },
+    { path: '/dashboard/organizations', label: 'Organizations', icon: Building2 },
+    { path: '/dashboard/users', label: 'Users', icon: Users },
     { path: '/dashboard/api-keys', label: 'API Keys', icon: Key },
     { path: '/dashboard/webhooks', label: 'Webhooks', icon: Webhook },
     { path: '/dashboard/audit', label: 'Audit Logs', icon: FileText },
     { path: '/dashboard/settings', label: 'Settings', icon: Settings },
-    { path: '/dashboard/users', label: 'Users', icon: Users },
   ];
 
   return (
     <ConfirmProvider>
-      <div style={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
       
       {/* Mobile Header */}
       <div className={styles.mobileHeader} style={{
@@ -117,7 +119,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
-              <a
+              <Link
                 key={item.path}
                 href={item.path}
                 style={{
@@ -132,6 +134,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   border: pathname === item.path ? '1px solid #10b981' : '1px solid transparent',
+                  textDecoration: 'none',
                 }}
                 onMouseEnter={(e) => {
                   if (pathname !== item.path) {
@@ -148,7 +151,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               >
                 <Icon size={18} />
                 <span>{item.label}</span>
-              </a>
+              </Link>
             );
           })}
         </nav>

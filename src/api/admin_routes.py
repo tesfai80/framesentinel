@@ -1,41 +1,87 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, and_
+from datetime import datetime, timedelta
 from src.config.database import get_db
 from src.api.auth import verify_api_key
-from src.models.database import WebhookLog, AuditLog, TenantSettings, VerificationSession, VerificationResult, SessionState, RiskLevel
+from src.middleware.api_key_middleware import get_tenant_from_request
+from src.models.database import WebhookLog, AuditLog, TenantSettings, VerificationSession, VerificationResult, SessionState, RiskLevel, UsageRecord
 from src.services.audit.audit_service import AuditService
 from src.services.tenant.tenant_service import TenantService
+from src.services.cache_service import cache_service
 from typing import Optional
 
 router = APIRouter(prefix="/api/v1", dependencies=[Depends(verify_api_key)])
 
 # Admin stats endpoint
 @router.get("/admin/stats")
-async def get_admin_stats(db: Session = Depends(get_db)):
-    total_sessions = db.query(func.count(VerificationSession.session_id)).scalar()
+async def get_admin_stats(request: Request, db: Session = Depends(get_db)):
+    tenant_id = get_tenant_from_request(request) or "default"
+    
+    # Try cache first
+    cache_key = f"stats:{tenant_id}"
+    cached_data = cache_service.get(cache_key)
+    if cached_data:
+        return cached_data
+    
+    total_sessions = db.query(func.count(VerificationSession.session_id)).filter(
+        VerificationSession.tenant_id == tenant_id
+    ).scalar()
     completed_sessions = db.query(func.count(VerificationSession.session_id)).filter(
-        VerificationSession.state == SessionState.COMPLETED
+        and_(
+            VerificationSession.state == SessionState.COMPLETED,
+            VerificationSession.tenant_id == tenant_id
+        )
     ).scalar()
     failed_sessions = db.query(func.count(VerificationSession.session_id)).filter(
-        VerificationSession.state == SessionState.FAILED
+        and_(
+            VerificationSession.state == SessionState.FAILED,
+            VerificationSession.tenant_id == tenant_id
+        )
     ).scalar()
     processing_sessions = db.query(func.count(VerificationSession.session_id)).filter(
-        VerificationSession.state == SessionState.PROCESSING
+        and_(
+            VerificationSession.state == SessionState.PROCESSING,
+            VerificationSession.tenant_id == tenant_id
+        )
     ).scalar()
     
-    # Risk level distribution
-    verified_count = db.query(func.count(VerificationResult.session_id)).filter(
-        VerificationResult.risk_level == RiskLevel.VERIFIED
+    # Risk level distribution - join with sessions to filter by tenant
+    verified_count = db.query(func.count(VerificationResult.session_id)).join(
+        VerificationSession, VerificationResult.session_id == VerificationSession.session_id
+    ).filter(
+        and_(
+            VerificationResult.risk_level == RiskLevel.VERIFIED,
+            VerificationSession.tenant_id == tenant_id
+        )
     ).scalar()
-    suspicious_count = db.query(func.count(VerificationResult.session_id)).filter(
-        VerificationResult.risk_level == RiskLevel.SUSPICIOUS
+    suspicious_count = db.query(func.count(VerificationResult.session_id)).join(
+        VerificationSession, VerificationResult.session_id == VerificationSession.session_id
+    ).filter(
+        and_(
+            VerificationResult.risk_level == RiskLevel.SUSPICIOUS,
+            VerificationSession.tenant_id == tenant_id
+        )
     ).scalar()
-    high_risk_count = db.query(func.count(VerificationResult.session_id)).filter(
-        VerificationResult.risk_level == RiskLevel.HIGH_RISK
+    high_risk_count = db.query(func.count(VerificationResult.session_id)).join(
+        VerificationSession, VerificationResult.session_id == VerificationSession.session_id
+    ).filter(
+        and_(
+            VerificationResult.risk_level == RiskLevel.HIGH_RISK,
+            VerificationSession.tenant_id == tenant_id
+        )
     ).scalar()
     
-    return {
+    # Calculate average score and processing time for tenant
+    avg_score = db.query(func.avg(VerificationResult.authenticity_score)).join(
+        VerificationSession, VerificationResult.session_id == VerificationSession.session_id
+    ).filter(VerificationSession.tenant_id == tenant_id).scalar() or 0
+    
+    avg_processing_time = db.query(func.avg(UsageRecord.processing_time_ms)).filter(
+        UsageRecord.tenant_id == tenant_id
+    ).scalar() or 0
+    
+    result = {
         "total_sessions": total_sessions,
         "completed_sessions": completed_sessions,
         "failed_sessions": failed_sessions,
@@ -44,18 +90,123 @@ async def get_admin_stats(db: Session = Depends(get_db)):
             "verified": verified_count,
             "suspicious": suspicious_count,
             "high_risk": high_risk_count
-        }
+        },
+        "avg_score": float(avg_score),
+        "processing_time_avg": float(avg_processing_time)
     }
+    
+    # Cache for 5 minutes
+    cache_service.set(cache_key, result, ttl=300)
+    return result
+
+# Analyst activity stats
+@router.get("/admin/analyst-activity")
+async def get_analyst_activity(request: Request, db: Session = Depends(get_db)):
+    tenant_id = get_tenant_from_request(request) or "default"
+    
+    # Try cache first
+    cache_key = f"analyst_activity:{tenant_id}"
+    cached_data = cache_service.get(cache_key)
+    if cached_data:
+        return cached_data
+    
+    today = datetime.utcnow().date()
+    today_start = datetime.combine(today, datetime.min.time())
+    
+    # Reviews today - count completed sessions today for tenant
+    reviews_today = db.query(func.count(VerificationSession.session_id)).filter(
+        and_(
+            VerificationSession.state == SessionState.COMPLETED,
+            VerificationSession.updated_at >= today_start,
+            VerificationSession.tenant_id == tenant_id
+        )
+    ).scalar() or 0
+    
+    # Approval rate (verified vs total completed) for tenant
+    total_completed = db.query(func.count(VerificationResult.session_id)).join(
+        VerificationSession, VerificationResult.session_id == VerificationSession.session_id
+    ).filter(VerificationSession.tenant_id == tenant_id).scalar() or 1
+    
+    approved = db.query(func.count(VerificationResult.session_id)).join(
+        VerificationSession, VerificationResult.session_id == VerificationSession.session_id
+    ).filter(
+        and_(
+            VerificationResult.risk_level == RiskLevel.VERIFIED,
+            VerificationSession.tenant_id == tenant_id
+        )
+    ).scalar() or 0
+    
+    approval_rate = (approved / total_completed * 100) if total_completed > 0 else 0
+    
+    # Escalations (high risk sessions today) for tenant
+    escalations = db.query(func.count(VerificationResult.session_id)).join(
+        VerificationSession, VerificationResult.session_id == VerificationSession.session_id
+    ).filter(
+        and_(
+            VerificationResult.risk_level == RiskLevel.HIGH_RISK,
+            VerificationResult.processed_at >= today_start,
+            VerificationSession.tenant_id == tenant_id
+        )
+    ).scalar() or 0
+    
+    result = {
+        "reviews_today": reviews_today,
+        "approval_rate": round(approval_rate, 1),
+        "escalations": escalations
+    }
+    
+    # Cache for 1 minute
+    cache_service.set(cache_key, result, ttl=60)
+    return result
+
+# Webhook stats
+@router.get("/admin/webhook-stats")
+async def get_webhook_stats(request: Request, db: Session = Depends(get_db)):
+    tenant_id = get_tenant_from_request(request) or "default"
+    
+    # Try cache first
+    cache_key = f"webhook_stats:{tenant_id}"
+    cached_data = cache_service.get(cache_key)
+    if cached_data:
+        return cached_data
+    
+    # Join with sessions to filter by tenant
+    total_webhooks = db.query(func.count(WebhookLog.id)).join(
+        VerificationSession, WebhookLog.session_id == VerificationSession.session_id
+    ).filter(VerificationSession.tenant_id == tenant_id).scalar() or 1
+    
+    failed_webhooks = db.query(func.count(WebhookLog.id)).join(
+        VerificationSession, WebhookLog.session_id == VerificationSession.session_id
+    ).filter(
+        and_(
+            WebhookLog.success == False,
+            VerificationSession.tenant_id == tenant_id
+        )
+    ).scalar() or 0
+    
+    fail_rate = (failed_webhooks / total_webhooks * 100) if total_webhooks > 0 else 0
+    
+    result = {
+        "total_webhooks": total_webhooks,
+        "failed_webhooks": failed_webhooks,
+        "fail_rate": round(fail_rate, 1)
+    }
+    
+    # Cache for 2 minutes
+    cache_service.set(cache_key, result, ttl=120)
+    return result
 
 # Admin sessions endpoint
 @router.get("/admin/sessions")
 async def get_admin_sessions(
+    request: Request,
     limit: int = 100,
     offset: int = 0,
     state: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    query = db.query(VerificationSession)
+    tenant_id = get_tenant_from_request(request) or "default"
+    query = db.query(VerificationSession).filter(VerificationSession.tenant_id == tenant_id)
     
     if state:
         query = query.filter(VerificationSession.state == state)
@@ -81,11 +232,16 @@ async def get_admin_sessions(
 # Webhook endpoints
 @router.get("/webhooks/logs")
 async def get_webhook_logs(
+    request: Request,
     session_id: Optional[str] = None,
     limit: int = 100,
     db: Session = Depends(get_db)
 ):
-    query = db.query(WebhookLog)
+    tenant_id = get_tenant_from_request(request) or "default"
+    query = db.query(WebhookLog).join(
+        VerificationSession, WebhookLog.session_id == VerificationSession.session_id
+    ).filter(VerificationSession.tenant_id == tenant_id)
+    
     if session_id:
         query = query.filter(WebhookLog.session_id == session_id)
     logs = query.order_by(WebhookLog.created_at.desc()).limit(limit).all()
@@ -139,12 +295,14 @@ async def redeliver_webhook(session_id: str, db: Session = Depends(get_db)):
 # Audit endpoints
 @router.get("/audit/logs")
 async def get_audit_logs(
+    request: Request,
     user_id: Optional[str] = None,
     action: Optional[str] = None,
     limit: int = 100,
     db: Session = Depends(get_db)
 ):
-    filters = {}
+    tenant_id = get_tenant_from_request(request) or "default"
+    filters = {'tenant_id': tenant_id}
     if user_id:
         filters['user_id'] = user_id
     if action:
@@ -169,6 +327,10 @@ async def get_audit_logs(
     ]
 
 # Tenant settings endpoints
+@router.options("/tenant/settings")
+async def options_tenant_settings():
+    return {}
+
 @router.get("/tenant/settings")
 async def get_tenant_settings(tenant_id: str = "default", db: Session = Depends(get_db)):
     settings = TenantService.get_settings(db, tenant_id)

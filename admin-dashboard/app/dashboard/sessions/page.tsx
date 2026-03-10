@@ -107,6 +107,8 @@ export default function SessionsPage() {
         borderRadius: '12px',
         border: '1px solid #374151',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
+        maxHeight: '600px',
+        overflowY: 'auto',
       }}>
         {loading ? (
           <Loading message="Loading sessions..." />

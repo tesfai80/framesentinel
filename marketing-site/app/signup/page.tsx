@@ -25,19 +25,20 @@ export default function SignUpPage() {
     setError('');
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`, {
+      // Create tenant with admin user
+      const tenantResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/tenants/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          role: 'USER',
-          tenant_id: formData.company.toLowerCase().replace(/\s+/g, '-'),
+          company_name: formData.company,
+          admin_email: formData.email,
+          admin_password: formData.password,
+          plan: formData.plan,
         }),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
+      if (!tenantResponse.ok) {
+        const data = await tenantResponse.json();
         throw new Error(data.detail || 'Registration failed');
       }
 
@@ -281,8 +282,10 @@ export default function SignUpPage() {
               value={formData.plan}
               onChange={(value) => setFormData({ ...formData, plan: value })}
               options={[
-                { value: 'starter', label: 'Starter - $99/month' },
-                { value: 'professional', label: 'Professional - $499/month' },
+                { value: 'free', label: 'Free - $0/month' },
+                { value: 'starter', label: 'Starter - $19/month' },
+                { value: 'growth', label: 'Growth - $59/month' },
+                { value: 'pro', label: 'Pro - $149/month' },
                 { value: 'enterprise', label: 'Enterprise - Custom' },
               ]}
               placeholder="Select a plan"

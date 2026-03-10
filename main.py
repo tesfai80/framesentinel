@@ -7,6 +7,7 @@ from src.api.user_routes import router as user_router
 from src.api.api_key_routes import router as api_key_router
 from src.api.usage_routes import router as usage_router
 from src.api.billing_routes import router as billing_router
+from src.api.tenant_routes import router as tenant_router
 from src.config.database import init_db
 
 app = FastAPI(
@@ -32,6 +33,7 @@ app.include_router(user_router)
 app.include_router(api_key_router)
 app.include_router(usage_router)
 app.include_router(billing_router)
+app.include_router(tenant_router)
 
 @app.on_event("startup")
 async def startup_event():

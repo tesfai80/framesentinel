@@ -75,6 +75,7 @@ class AuditLog(Base):
     __tablename__ = "audit_logs"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
+    tenant_id = Column(String, default="default")
     user_id = Column(String, nullable=False)
     action = Column(String, nullable=False)
     resource = Column(String, nullable=False)
@@ -125,6 +126,18 @@ class UsageRecord(Base):
     processing_time_ms = Column(Integer)
     cost_credits = Column(Float, default=1.0)  # 1 credit per video
     timestamp = Column(DateTime, default=datetime.utcnow)
+
+class Tenant(Base):
+    __tablename__ = "tenants"
+    
+    id = Column(String, primary_key=True)
+    company_name = Column(String, nullable=False)
+    domain = Column(String)
+    status = Column(String, default="active")  # active, suspended, trial
+    plan = Column(String, default="free")
+    max_users = Column(Integer, default=5)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class BillingAccount(Base):
     __tablename__ = "billing_accounts"

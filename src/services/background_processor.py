@@ -20,9 +20,22 @@ class BackgroundProcessor:
             session_id, video_path = task
             db = SessionLocal()
             try:
+                print(f"\n{'*'*60}")
+                print(f"BACKGROUND WORKER: Starting processing for {session_id}")
+                print(f"Video path: {video_path}")
+                print(f"{'*'*60}\n")
+                
                 self.processor.process_video(session_id, video_path, db)
+                
+                print(f"\n{'*'*60}")
+                print(f"BACKGROUND WORKER: Completed processing for {session_id}")
+                print(f"{'*'*60}\n")
             except Exception as e:
-                print(f"Background processing error: {e}")
+                print(f"\n{'!'*60}")
+                print(f"BACKGROUND WORKER ERROR for {session_id}: {e}")
+                import traceback
+                traceback.print_exc()
+                print(f"{'!'*60}\n")
             finally:
                 db.close()
                 self.queue.task_done()

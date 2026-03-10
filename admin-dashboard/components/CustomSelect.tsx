@@ -1,38 +1,22 @@
-'use client';
 import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 interface CustomSelectProps {
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
-  placeholder?: string;
 }
 
-export function CustomSelect({ value, onChange, options, placeholder }: CustomSelectProps) {
+export function CustomSelect({ value, onChange, options }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isOpen && dropdownRef.current) {
-      const rect = dropdownRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-      });
-    }
-  }, [isOpen]);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -40,58 +24,40 @@ export function CustomSelect({ value, onChange, options, placeholder }: CustomSe
   const selectedOption = options.find(opt => opt.value === value);
 
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
-      <button
-        type="button"
+    <div ref={ref} style={{ position: 'relative', width: '100%' }}>
+      <div
         onClick={() => setIsOpen(!isOpen)}
         style={{
           width: '100%',
-          padding: '12px',
-          background: '#2d3548',
-          color: '#e8eaed',
-          border: '1px solid #374151',
+          padding: '10px 14px',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
           borderRadius: '8px',
           fontSize: '14px',
+          background: '#111827',
+          color: '#e8eaed',
           cursor: 'pointer',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          transition: 'all 0.2s',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = '#10b981';
-          e.currentTarget.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.2)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = '#374151';
-          e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.3)';
         }}
       >
-        <span>{selectedOption?.label || placeholder || 'Select...'}</span>
-        <ChevronDown 
-          size={20} 
-          color="#10b981" 
-          style={{ 
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s'
-          }} 
-        />
-      </button>
-
-      {isOpen && typeof window !== 'undefined' && createPortal(
+        <span>{selectedOption?.label || 'Select...'}</span>
+        <ChevronDown size={16} color="#10b981" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+      </div>
+      
+      {isOpen && (
         <div style={{
           position: 'absolute',
-          top: `${dropdownPosition.top}px`,
-          left: `${dropdownPosition.left}px`,
-          width: `${dropdownPosition.width}px`,
-          background: '#1a1f2e',
-          border: '1px solid #374151',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: '4px',
+          background: '#1F2937',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
           borderRadius: '8px',
-          boxShadow: '0 8px 16px rgba(0, 0, 0, 0.5)',
-          zIndex: 9999,
-          maxHeight: '300px',
-          overflowY: 'auto',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+          zIndex: 1000,
+          overflow: 'hidden',
         }}>
           {options.map((option) => (
             <div
@@ -102,29 +68,30 @@ export function CustomSelect({ value, onChange, options, placeholder }: CustomSe
               }}
               style={{
                 padding: '12px 16px',
+                fontSize: '14px',
+                color: value === option.value ? '#10B981' : '#E5E7EB',
+                background: value === option.value ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
                 cursor: 'pointer',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                color: option.value === value ? '#10b981' : '#e8eaed',
-                fontWeight: option.value === value ? '600' : '400',
                 transition: 'all 0.2s',
+                fontWeight: value === option.value ? '600' : '500',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(10, 31, 15, 0.6) 0%, rgba(16, 185, 129, 0.2) 100%)';
-                e.currentTarget.style.color = '#10b981';
+                if (value !== option.value) {
+                  e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+                  e.currentTarget.style.color = '#10B981';
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = option.value === value ? '#10b981' : '#e8eaed';
+                if (value !== option.value) {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#E5E7EB';
+                }
               }}
             >
-              <span>{option.label}</span>
-              {option.value === value && <Check size={16} color="#10b981" />}
+              {option.label}
             </div>
           ))}
-        </div>,
-        document.body
+        </div>
       )}
     </div>
   );

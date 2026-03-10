@@ -1,0 +1,8 @@
+select option {
+  background: #111827 !important;
+  color: #e8eaed !important;
+}
+
+select {
+  cursor: pointer !important;
+}

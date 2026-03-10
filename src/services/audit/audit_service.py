@@ -12,9 +12,11 @@ class AuditService:
         resource: str,
         resource_id: Optional[str] = None,
         details: Optional[Dict] = None,
-        ip_address: Optional[str] = None
+        ip_address: Optional[str] = None,
+        tenant_id: str = "default"
     ):
         log = AuditLog(
+            tenant_id=tenant_id,
             user_id=user_id,
             action=action,
             resource=resource,
@@ -32,6 +34,8 @@ class AuditService:
         query = db.query(AuditLog)
         
         if filters:
+            if 'tenant_id' in filters:
+                query = query.filter(AuditLog.tenant_id == filters['tenant_id'])
             if 'user_id' in filters:
                 query = query.filter(AuditLog.user_id == filters['user_id'])
             if 'action' in filters:

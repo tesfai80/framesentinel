@@ -48,10 +48,10 @@ export function ToastContainer() {
 
   const getColors = (type: ToastType) => {
     switch (type) {
-      case 'success': return { bg: '#d4edda', border: '#28a745', text: '#155724' };
-      case 'error': return { bg: '#f8d7da', border: '#dc3545', text: '#721c24' };
-      case 'warning': return { bg: '#fff3cd', border: '#ffc107', text: '#856404' };
-      case 'info': return { bg: '#d1ecf1', border: '#17a2b8', text: '#0c5460' };
+      case 'success': return { bg: 'rgba(16, 185, 129, 0.1)', border: '#10b981', text: '#10b981' };
+      case 'error': return { bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444', text: '#ef4444' };
+      case 'warning': return { bg: 'rgba(245, 158, 11, 0.1)', border: '#f59e0b', text: '#f59e0b' };
+      case 'info': return { bg: 'rgba(6, 182, 212, 0.1)', border: '#06b6d4', text: '#06b6d4' };
     }
   };
 

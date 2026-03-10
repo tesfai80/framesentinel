@@ -27,6 +27,21 @@ export default function SettingsPage() {
       setSettings(data);
     } catch (error) {
       console.error('Failed to load settings:', error);
+      toast.error('Failed to load settings. Creating default settings...');
+      setSettings({
+        tenant_id: tenantId,
+        verified_threshold: 0.75,
+        suspicious_threshold: 0.50,
+        retention_days: 30,
+        max_video_size_mb: 100,
+        allowed_formats: ['mp4', 'avi', 'mov', 'webm'],
+        webhook_url: '',
+        webhook_enabled: false,
+        deepfake_threshold: 0.70,
+        replay_threshold: 0.65,
+        injection_threshold: 0.60,
+        face_swap_threshold: 0.75,
+      });
     } finally {
       setLoading(false);
     }
@@ -53,11 +68,11 @@ export default function SettingsPage() {
       <h1 style={{ fontSize: '32px', marginBottom: '30px', color: '#e8eaed' }}>Settings</h1>
 
       <div style={{
-        background: '#161B22',
+        background: 'rgba(42, 52, 65, 0.5)',
         padding: '24px',
         borderRadius: '12px',
-        border: '1px solid rgba(16, 185, 129, 0.2)',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
+        border: '1px solid rgba(16, 185, 129, 0.25)',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
         marginBottom: '20px',
       }}>
         <h2 style={{ fontSize: '20px', marginBottom: '20px', color: '#e8eaed' }}>Risk Mapping Configuration</h2>
@@ -106,14 +121,31 @@ export default function SettingsPage() {
       </div>
 
       <div style={{
-        background: '#161B22',
+        background: 'rgba(42, 52, 65, 0.5)',
         padding: '24px',
         borderRadius: '12px',
-        border: '1px solid rgba(16, 185, 129, 0.2)',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
+        border: '1px solid rgba(16, 185, 129, 0.25)',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
         marginBottom: '20px',
       }}>
         <h2 style={{ fontSize: '20px', marginBottom: '20px', color: '#e8eaed' }}>Webhook Configuration</h2>
+        
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={settings.webhook_enabled}
+              onChange={(e) => setSettings({ ...settings, webhook_enabled: e.target.checked })}
+              style={{
+                width: '20px',
+                height: '20px',
+                cursor: 'pointer',
+                accentColor: '#10b981',
+              }}
+            />
+            <span style={{ fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>Enable Webhook</span>
+          </label>
+        </div>
         
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>
@@ -141,11 +173,11 @@ export default function SettingsPage() {
       </div>
 
       <div style={{
-        background: '#161B22',
+        background: 'rgba(42, 52, 65, 0.5)',
         padding: '24px',
         borderRadius: '12px',
-        border: '1px solid rgba(16, 185, 129, 0.2)',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)',
+        border: '1px solid rgba(16, 185, 129, 0.25)',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
         marginBottom: '20px',
       }}>
         <h2 style={{ fontSize: '20px', marginBottom: '20px', color: '#e8eaed' }}>Detection Thresholds</h2>

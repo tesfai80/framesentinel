@@ -1,6 +1,8 @@
 import numpy as np
 from typing import Dict, List
 import cv2
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
 
 class DeepfakeDetector:
     def analyze(self, frame: np.ndarray) -> Dict:
@@ -43,15 +45,34 @@ class DetectionPipeline:
         self.injection_detector = InjectionDetector()
         self.face_swap_detector = FaceSwapDetector()
         self.metadata_checker = MetadataIntegrityChecker()
+        self.executor = ThreadPoolExecutor(max_workers=4)
+    
+    def _run_detector(self, detector, frame: np.ndarray, detector_name: str) -> tuple:
+        """Run single detector and return result with name"""
+        return detector_name, detector.analyze(frame)
     
     def process_frame(self, frame_num: int, frame: np.ndarray) -> Dict:
-        return {
-            "frame_number": frame_num,
-            "deepfake": self.deepfake_detector.analyze(frame),
-            "replay": self.replay_detector.analyze(frame),
-            "injection": self.injection_detector.analyze(frame),
-            "face_swap": self.face_swap_detector.analyze(frame)
-        }
+        """Process frame with all detectors in parallel"""
+        detectors = [
+            (self.deepfake_detector, "deepfake"),
+            (self.replay_detector, "replay"),
+            (self.injection_detector, "injection"),
+            (self.face_swap_detector, "face_swap")
+        ]
+        
+        # Run all detectors in parallel
+        futures = []
+        for detector, name in detectors:
+            future = self.executor.submit(self._run_detector, detector, frame, name)
+            futures.append(future)
+        
+        # Collect results
+        results = {"frame_number": frame_num}
+        for future in futures:
+            name, result = future.result()
+            results[name] = result
+        
+        return results
     
     def check_metadata(self, metadata: dict) -> Dict:
         return self.metadata_checker.check(metadata)

@@ -298,6 +298,183 @@ console.log('Score:', result.authenticity_score);`}
             </p>
           </div>
 
+          {/* Risk Scoring & Decision Logic */}
+          <div style={{
+            padding: '40px',
+            background: 'rgba(26, 31, 46, 0.6)',
+            borderRadius: '16px',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            marginBottom: '40px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+              <Shield size={32} color="#10b981" />
+              <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#e8eaed' }}>Risk Scoring & Decision Logic</h2>
+            </div>
+            
+            <p style={{ color: '#9ca3af', marginBottom: '32px', fontSize: '16px', lineHeight: '1.6' }}>
+              FrameSentinel analyzes videos through 5 parallel detection modules and calculates an authenticity score (0-100%). 
+              The system automatically categorizes results into risk levels to guide your decision-making.
+            </p>
+
+            {/* Risk Levels */}
+            <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#10b981', marginBottom: '20px' }}>Risk Levels</h3>
+            <div style={{ display: 'grid', gap: '16px', marginBottom: '40px' }}>
+              {[
+                {
+                  level: 'VERIFIED',
+                  score: '85-100%',
+                  color: '#10b981',
+                  bgColor: 'rgba(16, 185, 129, 0.1)',
+                  icon: '✅',
+                  decision: 'Approve',
+                  description: 'Video is authentic with high confidence. All detection modules passed. Safe to proceed with verification.'
+                },
+                {
+                  level: 'REVIEW',
+                  score: '70-84%',
+                  color: '#f59e0b',
+                  bgColor: 'rgba(245, 158, 11, 0.1)',
+                  icon: '⚠️',
+                  decision: 'Manual Review',
+                  description: 'Minor anomalies detected. Requires human analyst review before making final decision.'
+                },
+                {
+                  level: 'SUSPICIOUS',
+                  score: '50-69%',
+                  color: '#f97316',
+                  bgColor: 'rgba(249, 115, 22, 0.1)',
+                  icon: '🚨',
+                  decision: 'Likely Reject',
+                  description: 'Multiple fraud indicators detected. High probability of manipulation. Recommend rejection unless strong evidence suggests otherwise.'
+                },
+                {
+                  level: 'REJECTED',
+                  score: '0-49%',
+                  color: '#ef4444',
+                  bgColor: 'rgba(239, 68, 68, 0.1)',
+                  icon: '❌',
+                  decision: 'Reject',
+                  description: 'Strong fraud signals detected across multiple modules. Video is likely fake or manipulated. Reject verification immediately.'
+                },
+              ].map((risk, idx) => (
+                <div key={idx} style={{
+                  padding: '24px',
+                  background: risk.bgColor,
+                  borderRadius: '12px',
+                  border: `2px solid ${risk.color}`,
+                  display: 'grid',
+                  gridTemplateColumns: '80px 120px 1fr',
+                  gap: '20px',
+                  alignItems: 'center',
+                }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '32px', marginBottom: '4px' }}>{risk.icon}</div>
+                    <div style={{ color: risk.color, fontWeight: '700', fontSize: '14px' }}>{risk.score}</div>
+                  </div>
+                  <div>
+                    <div style={{ color: risk.color, fontWeight: '700', fontSize: '18px', marginBottom: '4px' }}>
+                      {risk.level}
+                    </div>
+                    <div style={{ color: '#9ca3af', fontSize: '12px', fontWeight: '600' }}>
+                      {risk.decision}
+                    </div>
+                  </div>
+                  <div style={{ color: '#e8eaed', fontSize: '14px', lineHeight: '1.5' }}>
+                    {risk.description}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Detection Modules */}
+            <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#10b981', marginBottom: '20px' }}>Detection Modules</h3>
+            <p style={{ color: '#9ca3af', marginBottom: '20px', fontSize: '14px' }}>
+              Each video is analyzed by 5 specialized AI modules running in parallel:
+            </p>
+            <div style={{ display: 'grid', gap: '12px', marginBottom: '40px' }}>
+              {[
+                { name: 'Deepfake Detection', desc: 'Identifies AI-generated or synthetically modified faces using deep learning models' },
+                { name: 'Replay Attack Detection', desc: 'Detects videos recorded from screens or pre-recorded content being played back' },
+                { name: 'Injection Detection', desc: 'Identifies videos injected into the camera stream via virtual cameras or software' },
+                { name: 'Face Swap Detection', desc: 'Detects face replacement techniques and morphing attacks' },
+                { name: 'Metadata Integrity', desc: 'Analyzes video file metadata for signs of tampering or manipulation' },
+              ].map((module, idx) => (
+                <div key={idx} style={{
+                  padding: '16px 20px',
+                  background: '#1a1f2e',
+                  borderRadius: '8px',
+                  borderLeft: '4px solid #10b981',
+                }}>
+                  <div style={{ color: '#10b981', fontWeight: '600', marginBottom: '4px' }}>{module.name}</div>
+                  <div style={{ color: '#9ca3af', fontSize: '13px' }}>{module.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Score Calculation */}
+            <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#10b981', marginBottom: '20px' }}>How Scores Are Calculated</h3>
+            <div style={{
+              padding: '24px',
+              background: '#1a1f2e',
+              borderRadius: '12px',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+            }}>
+              <ol style={{ color: '#e8eaed', fontSize: '14px', lineHeight: '1.8', paddingLeft: '20px' }}>
+                <li style={{ marginBottom: '12px' }}>
+                  <strong style={{ color: '#10b981' }}>Frame Analysis:</strong> System extracts up to 15 frames evenly distributed across the video
+                </li>
+                <li style={{ marginBottom: '12px' }}>
+                  <strong style={{ color: '#10b981' }}>Parallel Detection:</strong> All 5 modules analyze each frame simultaneously (2-4 seconds total)
+                </li>
+                <li style={{ marginBottom: '12px' }}>
+                  <strong style={{ color: '#10b981' }}>Detection Rate:</strong> Calculates percentage of frames flagged by each module
+                </li>
+                <li style={{ marginBottom: '12px' }}>
+                  <strong style={{ color: '#10b981' }}>Score Reduction:</strong> Each detection reduces the authenticity score proportionally
+                </li>
+                <li>
+                  <strong style={{ color: '#10b981' }}>Final Score:</strong> Combines all module results into single authenticity score (0-100%)
+                </li>
+              </ol>
+            </div>
+
+            {/* Example Response */}
+            <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#10b981', marginTop: '40px', marginBottom: '20px' }}>Example Response</h3>
+            <pre style={{
+              background: '#1a1f2e',
+              padding: '24px',
+              borderRadius: '12px',
+              color: '#e8eaed',
+              fontSize: '13px',
+              overflowX: 'auto',
+              lineHeight: '1.6',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+            }}>
+{`{
+  "session_id": "sess_abc123",
+  "state": "COMPLETED",
+  "authenticity_score": 0.42,  // 42% - REJECTED
+  "risk_level": "REJECTED",
+  "detection_flags": {
+    "deepfake_detected": true,   // AI-generated face detected
+    "replay_detected": false,
+    "injection_detected": true,  // Virtual camera detected
+    "face_swap_detected": false,
+    "metadata_anomaly": true     // File metadata tampered
+  },
+  "frame_timeline": [
+    {
+      "frame_number": 5,
+      "timestamp": 0.167,
+      "flags": ["deepfake", "injection"],
+      "confidence": 0.89
+    }
+  ],
+  "processed_at": "2024-01-15T10:30:45Z"
+}`}
+            </pre>
+          </div>
+
           {/* Error Codes */}
           <div style={{
             padding: '40px',

@@ -41,16 +41,23 @@ async def list_sessions(request: Request, db: Session = Depends(get_db), _=Depen
         VerificationSession.created_at.desc()
     ).limit(100).all()
     
-    return [
-        {
+    result_list = []
+    for s in sessions:
+        result = db.query(VerificationResult).filter(
+            VerificationResult.session_id == s.session_id
+        ).first()
+        
+        result_list.append({
             "session_id": s.session_id,
             "user_id": s.user_id,
             "state": s.state,
+            "risk_level": result.risk_level if result else None,
+            "authenticity_score": result.authenticity_score if result else None,
             "created_at": s.created_at,
             "updated_at": s.updated_at
-        }
-        for s in sessions
-    ]
+        })
+    
+    return result_list
 
 @router.post("/sessions", response_model=SessionCreateResponse)
 async def create_session(request: Request, req_body: SessionCreateRequest, db: Session = Depends(get_db), _=Depends(verify_api_key)):
