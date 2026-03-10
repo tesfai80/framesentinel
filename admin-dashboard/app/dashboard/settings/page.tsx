@@ -30,11 +30,6 @@ export default function SettingsPage() {
       toast.error('Failed to load settings. Creating default settings...');
       setSettings({
         tenant_id: tenantId,
-        verified_threshold: 0.75,
-        suspicious_threshold: 0.50,
-        retention_days: 30,
-        max_video_size_mb: 100,
-        allowed_formats: ['mp4', 'avi', 'mov', 'webm'],
         webhook_url: '',
         webhook_enabled: false,
         deepfake_threshold: 0.70,

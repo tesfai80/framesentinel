@@ -61,6 +61,7 @@ export interface AuditLog {
 export interface TenantSettings {
   tenant_id: string;
   webhook_url?: string;
+  webhook_enabled?: boolean;
   deepfake_threshold: number;
   replay_threshold: number;
   injection_threshold: number;
