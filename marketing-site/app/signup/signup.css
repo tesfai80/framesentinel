@@ -1,0 +1,21 @@
+.signup-input {
+  width: 100%;
+  padding: 14px 14px 14px 48px;
+  background: #2d3548;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  color: #e8eaed;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.signup-input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  background: #323b4f;
+}
+
+.signup-input::placeholder {
+  color: #6b7280;
+}

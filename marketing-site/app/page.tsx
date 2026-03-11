@@ -92,6 +92,35 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Social Proof Section */}
+      <section style={{
+        padding: isMobile ? '40px 20px' : '60px 40px',
+        textAlign: 'center',
+        background: 'rgba(26, 31, 46, 0.4)',
+      }}>
+        <p style={{ color: '#9ca3af', fontSize: isMobile ? '14px' : '16px', marginBottom: '32px' }}>
+          Trusted by fintech and security teams worldwide
+        </p>
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: isMobile ? '32px' : '48px',
+          alignItems: 'center',
+        }}>
+          {['Stripe', 'Coinbase', 'Revolut', 'N26', 'Wise'].map((company) => (
+            <div key={company} style={{
+              fontSize: isMobile ? '18px' : '24px',
+              fontWeight: '600',
+              color: '#6b7280',
+              opacity: 0.6,
+            }}>
+              {company}
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section style={{
         padding: isMobile ? '40px 20px' : '60px 40px',
         background: 'rgba(26, 31, 46, 0.6)',
@@ -122,6 +151,121 @@ export default function HomePage() {
           <div>
             <div style={{ fontSize: isMobile ? '32px' : '48px', fontWeight: 'bold', color: '#10b981', marginBottom: '8px' }}>500+</div>
             <div style={{ color: '#9ca3af', fontSize: isMobile ? '12px' : '16px' }}>Enterprise Clients</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Product Screenshot Section */}
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 40px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: isMobile ? '32px' : '48px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: '16px',
+            color: '#e8eaed',
+          }}>
+            See FrameSentinel in Action
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '16px' : '20px',
+            color: '#9ca3af',
+            textAlign: 'center',
+            marginBottom: isMobile ? '40px' : '60px',
+          }}>
+            Real-time fraud detection dashboard
+          </p>
+          <div style={{
+            background: 'rgba(26, 31, 46, 0.6)',
+            borderRadius: '16px',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            padding: isMobile ? '20px' : '40px',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 31, 15, 0.3) 100%)',
+              borderRadius: '12px',
+              padding: isMobile ? '40px 20px' : '80px 40px',
+              textAlign: 'center',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+            }}>
+              <BarChart3 size={isMobile ? 48 : 64} color="#10b981" style={{ marginBottom: '20px' }} />
+              <h3 style={{ fontSize: isMobile ? '20px' : '24px', color: '#e8eaed', marginBottom: '12px' }}>
+                Dashboard Preview
+              </h3>
+              <p style={{ color: '#9ca3af', fontSize: isMobile ? '14px' : '16px' }}>
+                Real-time fraud detection results, risk scoring, and detailed analytics
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section style={{
+        padding: isMobile ? '60px 20px' : '100px 40px',
+        background: 'rgba(26, 31, 46, 0.4)',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: isMobile ? '32px' : '48px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: '16px',
+            color: '#e8eaed',
+          }}>
+            How It Works
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '16px' : '20px',
+            color: '#9ca3af',
+            textAlign: 'center',
+            marginBottom: isMobile ? '40px' : '60px',
+          }}>
+            Three simple steps to fraud-free verification
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? '32px' : '40px' }}>
+            {[
+              { step: '1', title: 'Upload verification video', description: 'Send video via API or SDK integration', icon: '📹' },
+              { step: '2', title: 'AI analyzes frames', description: '5 detection modules run in parallel', icon: '🤖' },
+              { step: '3', title: 'Receive fraud score', description: 'Get instant results via webhook', icon: '✅' },
+            ].map((item) => (
+              <div key={item.step} style={{
+                textAlign: 'center',
+                padding: '32px',
+                background: 'rgba(26, 31, 46, 0.6)',
+                borderRadius: '16px',
+                border: '1px solid rgba(16, 185, 129, 0.2)',
+              }}>
+                <div style={{
+                  width: isMobile ? '60px' : '80px',
+                  height: isMobile ? '60px' : '80px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: isMobile ? '28px' : '36px',
+                  margin: '0 auto 24px',
+                }}>
+                  {item.icon}
+                </div>
+                <div style={{
+                  fontSize: isMobile ? '14px' : '16px',
+                  color: '#10b981',
+                  fontWeight: '600',
+                  marginBottom: '12px',
+                }}>
+                  STEP {item.step}
+                </div>
+                <h3 style={{ fontSize: isMobile ? '18px' : '20px', color: '#e8eaed', marginBottom: '12px', fontWeight: '600' }}>
+                  {item.title}
+                </h3>
+                <p style={{ color: '#9ca3af', fontSize: isMobile ? '14px' : '16px' }}>
+                  {item.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -208,6 +352,291 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Developer Section */}
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 40px', background: 'rgba(26, 31, 46, 0.4)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: isMobile ? '32px' : '48px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: '16px',
+            color: '#e8eaed',
+          }}>
+            Integrate in minutes
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '16px' : '20px',
+            color: '#9ca3af',
+            textAlign: 'center',
+            marginBottom: isMobile ? '40px' : '60px',
+          }}>
+            Simple REST API with SDKs for all major languages
+          </p>
+          <div style={{
+            background: '#1a1f2e',
+            borderRadius: '16px',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            padding: isMobile ? '20px' : '32px',
+            overflow: 'auto',
+          }}>
+            <pre style={{
+              color: '#e8eaed',
+              fontSize: isMobile ? '12px' : '14px',
+              lineHeight: '1.6',
+              margin: 0,
+              fontFamily: 'monospace',
+            }}>
+{`const session = await fetch('https://api.framesentinel.com/v1/sessions', {
+  method: 'POST',
+  headers: { 'X-API-Key': 'your_api_key' },
+  body: JSON.stringify({ user_id: 'user_123' })
+});
+
+const formData = new FormData();
+formData.append('video', videoFile);
+
+await fetch(\`/v1/sessions/\${session.id}/upload\`, {
+  method: 'POST',
+  headers: { 'X-API-Key': 'your_api_key' },
+  body: formData
+});
+
+const result = await fetch(\`/v1/sessions/\${session.id}/result\`);
+console.log(result.authenticity_score); // 0.95`}
+            </pre>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Preview */}
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 40px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: isMobile ? '32px' : '48px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: '16px',
+            color: '#e8eaed',
+          }}>
+            Simple, transparent pricing
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '16px' : '20px',
+            color: '#9ca3af',
+            textAlign: 'center',
+            marginBottom: isMobile ? '40px' : '60px',
+          }}>
+            Choose the plan that fits your needs
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap: isMobile ? '20px' : '24px' }}>
+            {[
+              { name: 'Free', price: '$0', videos: '100 videos/mo' },
+              { name: 'Starter', price: '$19', videos: '1,000 videos/mo', popular: true },
+              { name: 'Growth', price: '$59', videos: '10,000 videos/mo' },
+              { name: 'Enterprise', price: 'Custom', videos: 'Unlimited' },
+            ].map((plan) => (
+              <div key={plan.name} style={{
+                padding: '32px',
+                background: plan.popular ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 31, 15, 0.3) 100%)' : 'rgba(26, 31, 46, 0.6)',
+                borderRadius: '16px',
+                border: plan.popular ? '2px solid #10b981' : '1px solid rgba(16, 185, 129, 0.2)',
+                position: 'relative',
+                textAlign: 'center',
+              }}>
+                {plan.popular && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '-12px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: '#10b981',
+                    color: '#000',
+                    padding: '4px 16px',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                  }}>
+                    POPULAR
+                  </div>
+                )}
+                <h3 style={{ fontSize: '20px', color: '#e8eaed', marginBottom: '8px', fontWeight: '600' }}>
+                  {plan.name}
+                </h3>
+                <div style={{ fontSize: isMobile ? '32px' : '40px', fontWeight: 'bold', color: '#10b981', marginBottom: '8px' }}>
+                  {plan.price}
+                  {plan.price !== 'Custom' && <span style={{ fontSize: '16px', color: '#9ca3af' }}>/mo</span>}
+                </div>
+                <p style={{ color: '#9ca3af', fontSize: '14px' }}>
+                  {plan.videos}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: '40px' }}>
+            <Link href="/pricing" style={{
+              color: '#10b981',
+              fontSize: '16px',
+              fontWeight: '600',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}>
+              View detailed pricing
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Security Section */}
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 40px', background: 'rgba(26, 31, 46, 0.4)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: isMobile ? '32px' : '48px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: '16px',
+            color: '#e8eaed',
+          }}>
+            Enterprise-grade security
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '16px' : '20px',
+            color: '#9ca3af',
+            textAlign: 'center',
+            marginBottom: isMobile ? '40px' : '60px',
+          }}>
+            Your data security is our top priority
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? '24px' : '32px' }}>
+            {[
+              { icon: '🔒', title: 'SOC 2 Ready', description: 'Industry-standard security controls' },
+              { icon: '🛡️', title: 'GDPR Compliant', description: 'EU data protection regulations' },
+              { icon: '🔐', title: 'Encrypted Processing', description: 'End-to-end encryption' },
+            ].map((item, idx) => (
+              <div key={idx} style={{
+                padding: '32px',
+                background: 'rgba(26, 31, 46, 0.6)',
+                borderRadius: '16px',
+                border: '1px solid rgba(16, 185, 129, 0.2)',
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: isMobile ? '40px' : '48px', marginBottom: '16px' }}>
+                  {item.icon}
+                </div>
+                <h3 style={{ fontSize: isMobile ? '18px' : '20px', color: '#e8eaed', marginBottom: '12px', fontWeight: '600' }}>
+                  {item.title}
+                </h3>
+                <p style={{ color: '#9ca3af', fontSize: isMobile ? '14px' : '16px' }}>
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Demo */}
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 40px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: isMobile ? '32px' : '48px',
+            fontWeight: 'bold',
+            textAlign: 'center',
+            marginBottom: '16px',
+            color: '#e8eaed',
+          }}>
+            Try FrameSentinel Fraud Detection
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '16px' : '20px',
+            color: '#9ca3af',
+            textAlign: 'center',
+            marginBottom: isMobile ? '40px' : '60px',
+          }}>
+            Upload a video and see our AI in action
+          </p>
+          <div style={{
+            background: 'rgba(26, 31, 46, 0.8)',
+            borderRadius: '16px',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            padding: isMobile ? '32px 20px' : '48px',
+            textAlign: 'center',
+          }}>
+            <div style={{
+              border: '2px dashed rgba(16, 185, 129, 0.3)',
+              borderRadius: '12px',
+              padding: isMobile ? '40px 20px' : '60px 40px',
+              marginBottom: '24px',
+              background: 'rgba(16, 185, 129, 0.05)',
+            }}>
+              <Play size={isMobile ? 48 : 64} color="#10b981" style={{ marginBottom: '16px' }} />
+              <h3 style={{ fontSize: isMobile ? '18px' : '20px', color: '#e8eaed', marginBottom: '12px' }}>
+                Upload verification video
+              </h3>
+              <p style={{ color: '#9ca3af', fontSize: isMobile ? '14px' : '16px', marginBottom: '24px' }}>
+                Supported: MP4, AVI, MOV, WEBM (max 100MB)
+              </p>
+              <Link href="/demo" style={{
+                padding: '14px 32px',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#e8eaed',
+                borderRadius: '10px',
+                fontWeight: '600',
+                fontSize: '16px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}>
+                Try Live Demo
+                <ArrowRight size={20} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Second CTA */}
+      <section style={{
+        padding: isMobile ? '60px 20px' : '100px 40px',
+        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 31, 15, 0.3) 100%)',
+        borderTop: '1px solid rgba(16, 185, 129, 0.2)',
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{
+            fontSize: isMobile ? '32px' : '48px',
+            fontWeight: 'bold',
+            marginBottom: '24px',
+            color: '#e8eaed',
+          }}>
+            Start detecting AI fraud today
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '16px' : '20px',
+            color: '#9ca3af',
+            marginBottom: '40px',
+            padding: isMobile ? '0 20px' : '0',
+          }}>
+            Join 500+ companies protecting their users
+          </p>
+          <Link href="/signup" style={{
+            padding: isMobile ? '16px 40px' : '18px 48px',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: '#e8eaed',
+            borderRadius: '12px',
+            fontWeight: '600',
+            fontSize: isMobile ? '16px' : '20px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '12px',
+            boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)',
+          }}>
+            Start Free Trial
+            <ArrowRight size={isMobile ? 20 : 24} />
+          </Link>
         </div>
       </section>
 

@@ -1,6 +1,5 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { ChevronDown, Check } from 'lucide-react';
 
 interface CustomSelectProps {
@@ -12,19 +11,7 @@ interface CustomSelectProps {
 
 export function CustomSelect({ value, onChange, options, placeholder }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isOpen && dropdownRef.current) {
-      const rect = dropdownRef.current.getBoundingClientRect();
-      setDropdownPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-      });
-    }
-  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -57,11 +44,12 @@ export function CustomSelect({ value, onChange, options, placeholder }: CustomSe
           justifyContent: 'space-between',
           alignItems: 'center',
           transition: 'all 0.2s',
+          outline: 'none',
         }}
-        onMouseEnter={(e) => {
+        onFocus={(e) => {
           e.currentTarget.style.borderColor = '#10b981';
         }}
-        onMouseLeave={(e) => {
+        onBlur={(e) => {
           e.currentTarget.style.borderColor = '#374151';
         }}
       >
@@ -76,12 +64,12 @@ export function CustomSelect({ value, onChange, options, placeholder }: CustomSe
         />
       </button>
 
-      {isOpen && typeof window !== 'undefined' && createPortal(
+      {isOpen && (
         <div style={{
           position: 'absolute',
-          top: `${dropdownPosition.top}px`,
-          left: `${dropdownPosition.left}px`,
-          width: `${dropdownPosition.width}px`,
+          top: 'calc(100% + 4px)',
+          left: 0,
+          right: 0,
           background: '#1a1f2e',
           border: '1px solid #374151',
           borderRadius: '10px',
@@ -120,8 +108,7 @@ export function CustomSelect({ value, onChange, options, placeholder }: CustomSe
               {option.value === value && <Check size={16} color="#10b981" />}
             </div>
           ))}
-        </div>,
-        document.body
+        </div>
       )}
     </div>
   );

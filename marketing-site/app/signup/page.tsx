@@ -1,10 +1,13 @@
 'use client';
-import { useState } from 'react';
-import { Shield, Mail, Lock, User, Building, ArrowRight, Check, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Shield, Mail, Lock, User, Building, ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
 import { CustomSelect } from '../components/CustomSelect';
 import { useIsMobile } from '../utils/useIsMobile';
 import { useRouter } from 'next/navigation';
+import { toast, ToastContainer } from '../components/Toast';
+import { supabase } from '../../lib/supabase';
+import './signup.css';
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -12,17 +15,44 @@ export default function SignUpPage() {
     email: '',
     company: '',
     password: '',
-    plan: 'starter',
+    plan: 'free',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const isMobile = useIsMobile();
   const router = useRouter();
+
+  useEffect(() => {
+    // Check if user just signed up with OAuth
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        toast.success('Sign up successful! Redirecting...');
+        setTimeout(() => {
+          router.push('/login');
+        }, 1500);
+      }
+    });
+  }, [router]);
+
+  const handleOAuthSignup = async (provider: 'google' | 'github') => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/signup`,
+          scopes: provider === 'github' ? 'read:user user:email' : undefined,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      toast.error(err.message || `${provider} signup failed`);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    
+    console.log('Submitting with plan:', formData.plan);
     
     try {
       // Create tenant with admin user
@@ -42,36 +72,29 @@ export default function SignUpPage() {
         throw new Error(data.detail || 'Registration failed');
       }
 
-      alert('Sign up successful! Redirecting to dashboard...');
+      const tenantData = await tenantResponse.json();
+      console.log('Tenant created:', tenantData);
       
-      // Auto-login after registration
-      const loginResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      if (loginResponse.ok) {
-        const loginData = await loginResponse.json();
-        localStorage.setItem('user', JSON.stringify(loginData.user));
-        localStorage.setItem('token', loginData.token);
-        const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || 'http://localhost:3001';
-        window.location.href = `${dashboardUrl}/dashboard`;
-      } else {
-        router.push('/login');
-      }
+      toast.success('Sign up successful! Redirecting to dashboard...');
+      
+      // Wait a bit before redirect
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Redirect to login page instead of auto-login to avoid CORS
+      router.push('/login');
+      
     } catch (err: any) {
-      setError(err.message || 'Registration failed. Please try again.');
+      console.error('Signup error:', err);
+      toast.error(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
+    <>
+      <ToastContainer />
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: isMobile ? 'column' : 'row' }}>
       <div style={{
         flex: 1,
         padding: isMobile ? '40px 20px' : '60px',
@@ -81,10 +104,24 @@ export default function SignUpPage() {
         maxWidth: isMobile ? '100%' : '600px',
         margin: '0 auto',
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '48px' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
           <Shield size={32} color="#10b981" />
           <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>FrameSentinel</span>
         </Link>
+
+        {/* Trust Header */}
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '32px',
+          padding: '12px 24px',
+          background: 'rgba(16, 185, 129, 0.1)',
+          borderRadius: '8px',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+        }}>
+          <p style={{ fontSize: '14px', color: '#10b981', fontWeight: '600' }}>
+            🛡️ Trusted by fintech and security teams
+          </p>
+        </div>
 
         <h1 style={{
           fontSize: '36px',
@@ -102,25 +139,84 @@ export default function SignUpPage() {
           No credit card required • 14-day free trial • Cancel anytime
         </p>
 
-        {error && (
-          <div style={{
-            padding: '12px 16px',
-            marginBottom: '20px',
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid #ef4444',
-            borderRadius: '8px',
-            fontSize: '14px',
-            color: '#ef4444',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}>
-            <AlertCircle size={16} />
-            {error}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              type="button"
+              onClick={() => handleOAuthSignup('google')}
+              style={{
+                flex: 1,
+                padding: '14px',
+                background: '#fff',
+                color: '#1f2937',
+                border: '1px solid #d1d5db',
+                borderRadius: '10px',
+                fontSize: '15px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#f9fafb';
+                e.currentTarget.style.borderColor = '#10b981';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#fff';
+                e.currentTarget.style.borderColor = '#d1d5db';
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18">
+                <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
+                <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
+              </svg>
+              Google
+            </button>
+            <button
+              type="button"
+              onClick={() => handleOAuthSignup('github')}
+              style={{
+                flex: 1,
+                padding: '14px',
+                background: '#24292e',
+                color: '#fff',
+                border: '1px solid #24292e',
+                borderRadius: '10px',
+                fontSize: '15px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#2f363d';
+                e.currentTarget.style.borderColor = '#10b981';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#24292e';
+                e.currentTarget.style.borderColor = '#24292e';
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+              GitHub
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '8px 0' }}>
+            <div style={{ flex: 1, height: '1px', background: '#374151' }} />
+            <span style={{ fontSize: '14px', color: '#6b7280' }}>or continue with email</span>
+            <div style={{ flex: 1, height: '1px', background: '#374151' }} />
+          </div>
           <div>
             <label style={{
               display: 'block',
@@ -144,15 +240,7 @@ export default function SignUpPage() {
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="John Doe"
-                style={{
-                  width: '100%',
-                  padding: '14px 14px 14px 48px',
-                  background: '#2d3548',
-                  border: '1px solid #374151',
-                  borderRadius: '10px',
-                  color: '#e8eaed',
-                  fontSize: '16px',
-                }}
+                className="signup-input"
               />
             </div>
           </div>
@@ -180,15 +268,7 @@ export default function SignUpPage() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="john@company.com"
-                style={{
-                  width: '100%',
-                  padding: '14px 14px 14px 48px',
-                  background: '#2d3548',
-                  border: '1px solid #374151',
-                  borderRadius: '10px',
-                  color: '#e8eaed',
-                  fontSize: '16px',
-                }}
+                className="signup-input"
               />
             </div>
           </div>
@@ -216,15 +296,7 @@ export default function SignUpPage() {
                 value={formData.company}
                 onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                 placeholder="Acme Inc."
-                style={{
-                  width: '100%',
-                  padding: '14px 14px 14px 48px',
-                  background: '#2d3548',
-                  border: '1px solid #374151',
-                  borderRadius: '10px',
-                  color: '#e8eaed',
-                  fontSize: '16px',
-                }}
+                className="signup-input"
               />
             </div>
           </div>
@@ -252,15 +324,7 @@ export default function SignUpPage() {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="••••••••"
-                style={{
-                  width: '100%',
-                  padding: '14px 14px 14px 48px',
-                  background: '#2d3548',
-                  border: '1px solid #374151',
-                  borderRadius: '10px',
-                  color: '#e8eaed',
-                  fontSize: '16px',
-                }}
+                className="signup-input"
               />
             </div>
             <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '6px' }}>
@@ -280,7 +344,10 @@ export default function SignUpPage() {
             </label>
             <CustomSelect
               value={formData.plan}
-              onChange={(value) => setFormData({ ...formData, plan: value })}
+              onChange={(value) => {
+                console.log('Plan changed to:', value);
+                setFormData({ ...formData, plan: value });
+              }}
               options={[
                 { value: 'free', label: 'Free - $0/month' },
                 { value: 'starter', label: 'Starter - $19/month' },
@@ -309,6 +376,18 @@ export default function SignUpPage() {
               justifyContent: 'center',
               gap: '10px',
               marginTop: '8px',
+              boxShadow: loading ? 'none' : '0 4px 16px rgba(16, 185, 129, 0.3)',
+              transition: 'all 0.3s',
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(16, 185, 129, 0.4)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = loading ? 'none' : '0 4px 16px rgba(16, 185, 129, 0.3)';
             }}
           >
             {loading ? 'Creating account...' : 'Start Free Trial'}
@@ -343,7 +422,7 @@ export default function SignUpPage() {
       {!isMobile && (
       <div style={{
         flex: 1,
-        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(10, 31, 15, 0.3) 100%)',
+        background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(10, 31, 15, 0.2) 100%)',
         padding: '80px 60px',
         display: 'flex',
         flexDirection: 'column',
@@ -417,29 +496,83 @@ export default function SignUpPage() {
 
         <div style={{
           marginTop: '48px',
-          padding: '24px',
-          background: 'rgba(26, 31, 46, 0.6)',
-          borderRadius: '12px',
-          border: '1px solid rgba(16, 185, 129, 0.2)',
+          padding: '32px',
+          background: 'rgba(26, 31, 46, 0.8)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
         }}>
           <p style={{
-            fontSize: '14px',
+            fontSize: '15px',
             color: '#9ca3af',
-            fontStyle: 'italic',
-            marginBottom: '12px',
+            lineHeight: '1.6',
+            marginBottom: '20px',
           }}>
-            "FrameSentinel helped us reduce fraud by 95% in the first month. The integration was seamless and the support team is outstanding."
+            "FrameSentinel was created to stop the growing threat of AI-generated identity fraud."
           </p>
-          <p style={{
-            fontSize: '14px',
-            color: '#e8eaed',
-            fontWeight: '600',
-          }}>
-            Sarah Chen, CTO at TechCorp
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: '#000',
+            }}>
+              TT
+            </div>
+            <div>
+              <p style={{
+                fontSize: '16px',
+                color: '#e8eaed',
+                fontWeight: '600',
+                marginBottom: '4px',
+              }}>
+                Tesfay Tadesse
+              </p>
+              <p style={{
+                fontSize: '13px',
+                color: '#9ca3af',
+              }}>
+                Founder, FrameSentinel<br/>
+                Creator of SaaSRX & GenDetect
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Badges */}
+        <div style={{
+          marginTop: '32px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '16px',
+        }}>
+          {[
+            { icon: '🔒', text: 'SOC2 Ready' },
+            { icon: '🛡️', text: 'GDPR Compliant' },
+            { icon: '🔐', text: 'End-to-End Encryption' },
+          ].map((badge, idx) => (
+            <div key={idx} style={{
+              padding: '12px',
+              background: 'rgba(26, 31, 46, 0.6)',
+              borderRadius: '8px',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '20px', marginBottom: '4px' }}>{badge.icon}</div>
+              <p style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '600' }}>{badge.text}</p>
+            </div>
+          ))}
         </div>
       </div>
       )}
     </div>
+    </>
   );
 }
