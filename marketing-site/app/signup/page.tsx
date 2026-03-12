@@ -113,13 +113,16 @@ export default function SignUpPage() {
         <div style={{
           textAlign: 'center',
           marginBottom: '32px',
-          padding: '12px 24px',
+          padding: '16px 24px',
           background: 'rgba(16, 185, 129, 0.1)',
           borderRadius: '8px',
           border: '1px solid rgba(16, 185, 129, 0.2)',
         }}>
-          <p style={{ fontSize: '14px', color: '#10b981', fontWeight: '600' }}>
-            🛡️ Trusted by fintech and security teams
+          <p style={{ fontSize: '14px', color: '#10b981', fontWeight: '600', marginBottom: '6px' }}>
+            Built by security engineers focused on stopping AI identity fraud.
+          </p>
+          <p style={{ fontSize: '12px', color: '#9ca3af' }}>
+            Created by the team behind SaaSRX and GenDetect.
           </p>
         </div>
 
@@ -507,43 +510,17 @@ export default function SignUpPage() {
             fontSize: '15px',
             color: '#9ca3af',
             lineHeight: '1.6',
-            marginBottom: '20px',
+            marginBottom: '16px',
           }}>
-            "FrameSentinel was created to stop the growing threat of AI-generated identity fraud."
+            "FrameSentinel was created to solve the growing problem of AI fraud in identity verification."
           </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: '#000',
-            }}>
-              TT
-            </div>
-            <div>
-              <p style={{
-                fontSize: '16px',
-                color: '#e8eaed',
-                fontWeight: '600',
-                marginBottom: '4px',
-              }}>
-                Tesfay Tadesse
-              </p>
-              <p style={{
-                fontSize: '13px',
-                color: '#9ca3af',
-              }}>
-                Founder, FrameSentinel<br/>
-                Creator of SaaSRX & GenDetect
-              </p>
-            </div>
-          </div>
+          <p style={{
+            fontSize: '14px',
+            color: '#10b981',
+            fontWeight: '600',
+          }}>
+            Built by the team behind SaaSRX and GenDetect.
+          </p>
         </div>
 
         {/* Security Badges */}

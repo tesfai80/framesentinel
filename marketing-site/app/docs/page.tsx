@@ -1,6 +1,145 @@
 'use client';
-import { Shield, Code, Terminal, Zap } from 'lucide-react';
+import { Shield, Code, Terminal, Zap, Copy, Check, CheckCircle, AlertTriangle, AlertOctagon, XCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+
+function CodeBlock({ code, language = 'typescript' }: { code: string; language?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Syntax highlighting for JSON
+  const highlightJSON = (code: string) => {
+    if (language !== 'json') return code;
+    
+    return code
+      .replace(/"([^"]+)":/g, '<span style="color: #79c0ff">"$1"</span>:') // keys
+      .replace(/: "([^"]+)"/g, ': <span style="color: #a5d6ff">"$1"</span>') // string values
+      .replace(/: (true|false)/g, ': <span style="color: #79c0ff">$1</span>') // booleans
+      .replace(/: (\d+\.?\d*)/g, ': <span style="color: #79c0ff">$1</span>') // numbers
+      .replace(/\/\/ (.+)/g, '<span style="color: #8b949e">// $1</span>'); // comments
+  };
+
+  // Syntax highlighting for TypeScript
+  const highlightTypeScript = (code: string) => {
+    if (language !== 'typescript') return code;
+    
+    return code
+      .replace(/\b(import|from|const|await|new)\b/g, '<span style="color: #ff7b72">$1</span>') // keywords
+      .replace(/\b(FrameSentinelClient|createSession|uploadVideo|pollUntilComplete)\b/g, '<span style="color: #d2a8ff">$1</span>') // methods
+      .replace(/\'([^\']+)\'/g, '<span style="color: #a5d6ff">\' $1\'</span>') // strings
+      .replace(/\/\/ (.+)/g, '<span style="color: #8b949e">// $1</span>'); // comments
+  };
+
+  // Syntax highlighting for bash
+  const highlightBash = (code: string) => {
+    if (language !== 'bash') return code;
+    
+    return code
+      .replace(/\b(npm|pip|install)\b/g, '<span style="color: #ff7b72">$1</span>'); // commands
+  };
+
+  // Syntax highlighting for env
+  const highlightEnv = (code: string) => {
+    if (language !== 'env') return code;
+    
+    return code
+      .replace(/^([A-Z_]+)=/gm, '<span style="color: #79c0ff">$1</span>=') // keys
+      .replace(/=(.+)$/gm, '=<span style="color: #a5d6ff">$1</span>'); // values
+  };
+
+  // Syntax highlighting for http
+  const highlightHTTP = (code: string) => {
+    if (language !== 'http') return code;
+    
+    return code
+      .replace(/^([A-Za-z-]+):/gm, '<span style="color: #79c0ff">$1</span>:') // headers
+      .replace(/: (.+)$/gm, ': <span style="color: #a5d6ff">$1</span>'); // values
+  };
+
+  const getHighlightedCode = () => {
+    let highlighted = code;
+    highlighted = highlightJSON(highlighted);
+    highlighted = highlightTypeScript(highlighted);
+    highlighted = highlightBash(highlighted);
+    highlighted = highlightEnv(highlighted);
+    highlighted = highlightHTTP(highlighted);
+    return highlighted;
+  };
+
+  return (
+    <div style={{
+      position: 'relative',
+      background: '#0d1117',
+      borderRadius: '12px',
+      border: '1px solid rgba(16, 185, 129, 0.2)',
+      overflow: 'hidden',
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '12px 16px',
+        background: 'rgba(26, 31, 46, 0.8)',
+        borderBottom: '1px solid rgba(16, 185, 129, 0.2)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff5f56' }} />
+          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ffbd2e' }} />
+          <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27c93f' }} />
+          <span style={{ marginLeft: '8px', fontSize: '12px', color: '#6b7280', fontFamily: 'monospace' }}>{language}</span>
+        </div>
+        <button
+          onClick={handleCopy}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '6px 12px',
+            background: copied ? 'rgba(16, 185, 129, 0.2)' : 'rgba(45, 53, 72, 0.8)',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            borderRadius: '6px',
+            color: copied ? '#10b981' : '#9ca3af',
+            fontSize: '12px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            if (!copied) {
+              e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+              e.currentTarget.style.color = '#10b981';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!copied) {
+              e.currentTarget.style.background = 'rgba(45, 53, 72, 0.8)';
+              e.currentTarget.style.color = '#9ca3af';
+            }
+          }}
+        >
+          {copied ? <Check size={14} /> : <Copy size={14} />}
+          {copied ? 'Copied!' : 'Copy'}
+        </button>
+      </div>
+      <pre style={{
+        padding: '20px',
+        margin: 0,
+        fontSize: '13px',
+        lineHeight: '1.6',
+        color: '#e8eaed',
+        fontFamily: '"Fira Code", "Consolas", monospace',
+        overflowX: 'auto',
+      }}>
+        <div dangerouslySetInnerHTML={{ __html: getHighlightedCode() }} />
+      </pre>
+    </div>
+  );
+}
 
 export default function DocsPage() {
   return (
@@ -78,58 +217,27 @@ export default function DocsPage() {
             
             <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#10b981', marginBottom: '16px' }}>1. Get Your API Key</h3>
             <p style={{ color: '#9ca3af', marginBottom: '20px' }}>Sign up and get your API key from the dashboard:</p>
-            <pre style={{
-              background: '#1a1f2e',
-              padding: '20px',
-              borderRadius: '8px',
-              color: '#10b981',
-              fontSize: '14px',
-              overflowX: 'auto',
-              marginBottom: '32px',
-            }}>
-              {`API_KEY=your-api-key-here
+            <CodeBlock
+              code={`API_KEY=your-api-key-here
 API_URL=https://framesentinel-341068003893.europe-west3.run.app`}
-            </pre>
+              language="env"
+            />
 
-            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#10b981', marginBottom: '16px' }}>2. Install SDK</h3>
+            <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#10b981', marginBottom: '16px', marginTop: '32px' }}>2. Install SDK</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
               <div>
                 <p style={{ color: '#9ca3af', marginBottom: '12px' }}>TypeScript/JavaScript:</p>
-                <pre style={{
-                  background: '#1a1f2e',
-                  padding: '16px',
-                  borderRadius: '8px',
-                  color: '#10b981',
-                  fontSize: '14px',
-                }}>
-                  npm install @framesentinel/sdk
-                </pre>
+                <CodeBlock code="npm install @framesentinel/sdk" language="bash" />
               </div>
               <div>
                 <p style={{ color: '#9ca3af', marginBottom: '12px' }}>Python:</p>
-                <pre style={{
-                  background: '#1a1f2e',
-                  padding: '16px',
-                  borderRadius: '8px',
-                  color: '#10b981',
-                  fontSize: '14px',
-                }}>
-                  pip install framesentinel
-                </pre>
+                <CodeBlock code="pip install framesentinel" language="bash" />
               </div>
             </div>
 
             <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#10b981', marginBottom: '16px' }}>3. Basic Usage</h3>
-            <pre style={{
-              background: '#1a1f2e',
-              padding: '20px',
-              borderRadius: '8px',
-              color: '#e8eaed',
-              fontSize: '14px',
-              overflowX: 'auto',
-              lineHeight: '1.6',
-            }}>
-{`import { FrameSentinelClient } from '@framesentinel/sdk';
+            <CodeBlock
+              code={`import { FrameSentinelClient } from '@framesentinel/sdk';
 
 const client = new FrameSentinelClient({
   apiKey: 'your-api-key',
@@ -147,7 +255,8 @@ const result = await client.pollUntilComplete(session.session_id);
 
 console.log('Risk Level:', result.risk_level);
 console.log('Score:', result.authenticity_score);`}
-            </pre>
+              language="typescript"
+            />
           </div>
 
           {/* API Endpoints */}
@@ -236,31 +345,11 @@ console.log('Score:', result.authenticity_score);`}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div>
                     <p style={{ color: '#e8eaed', fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Request:</p>
-                    <pre style={{
-                      background: '#1a1f2e',
-                      padding: '16px',
-                      borderRadius: '8px',
-                      color: '#e8eaed',
-                      fontSize: '12px',
-                      overflowX: 'auto',
-                      lineHeight: '1.5',
-                    }}>
-                      {endpoint.request}
-                    </pre>
+                    <CodeBlock code={endpoint.request} language="json" />
                   </div>
                   <div>
                     <p style={{ color: '#e8eaed', fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Response:</p>
-                    <pre style={{
-                      background: '#1a1f2e',
-                      padding: '16px',
-                      borderRadius: '8px',
-                      color: '#e8eaed',
-                      fontSize: '12px',
-                      overflowX: 'auto',
-                      lineHeight: '1.5',
-                    }}>
-                      {endpoint.response}
-                    </pre>
+                    <CodeBlock code={endpoint.response} language="json" />
                   </div>
                 </div>
               </div>
@@ -283,17 +372,8 @@ console.log('Score:', result.authenticity_score);`}
             <p style={{ color: '#9ca3af', marginBottom: '20px' }}>
               All API requests require authentication using your API key in the header:
             </p>
-            <pre style={{
-              background: '#1a1f2e',
-              padding: '20px',
-              borderRadius: '8px',
-              color: '#10b981',
-              fontSize: '14px',
-              marginBottom: '20px',
-            }}>
-              X-API-Key: your-api-key-here
-            </pre>
-            <p style={{ color: '#9ca3af' }}>
+            <CodeBlock code="X-API-Key: your-api-key-here" language="http" />
+            <p style={{ color: '#9ca3af', marginBottom: '20px', marginTop: '20px' }}>
               Keep your API key secure. Never expose it in client-side code or public repositories.
             </p>
           </div>
@@ -325,7 +405,7 @@ console.log('Score:', result.authenticity_score);`}
                   score: '85-100%',
                   color: '#10b981',
                   bgColor: 'rgba(16, 185, 129, 0.1)',
-                  icon: '✅',
+                  icon: CheckCircle,
                   decision: 'Approve',
                   description: 'Video is authentic with high confidence. All detection modules passed. Safe to proceed with verification.'
                 },
@@ -334,7 +414,7 @@ console.log('Score:', result.authenticity_score);`}
                   score: '70-84%',
                   color: '#f59e0b',
                   bgColor: 'rgba(245, 158, 11, 0.1)',
-                  icon: '⚠️',
+                  icon: AlertTriangle,
                   decision: 'Manual Review',
                   description: 'Minor anomalies detected. Requires human analyst review before making final decision.'
                 },
@@ -343,7 +423,7 @@ console.log('Score:', result.authenticity_score);`}
                   score: '50-69%',
                   color: '#f97316',
                   bgColor: 'rgba(249, 115, 22, 0.1)',
-                  icon: '🚨',
+                  icon: AlertOctagon,
                   decision: 'Likely Reject',
                   description: 'Multiple fraud indicators detected. High probability of manipulation. Recommend rejection unless strong evidence suggests otherwise.'
                 },
@@ -352,7 +432,7 @@ console.log('Score:', result.authenticity_score);`}
                   score: '0-49%',
                   color: '#ef4444',
                   bgColor: 'rgba(239, 68, 68, 0.1)',
-                  icon: '❌',
+                  icon: XCircle,
                   decision: 'Reject',
                   description: 'Strong fraud signals detected across multiple modules. Video is likely fake or manipulated. Reject verification immediately.'
                 },
@@ -368,7 +448,9 @@ console.log('Score:', result.authenticity_score);`}
                   alignItems: 'center',
                 }}>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '32px', marginBottom: '4px' }}>{risk.icon}</div>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+                      <risk.icon size={36} color={risk.color} strokeWidth={2} />
+                    </div>
                     <div style={{ color: risk.color, fontWeight: '700', fontSize: '14px' }}>{risk.score}</div>
                   </div>
                   <div>
@@ -440,17 +522,8 @@ console.log('Score:', result.authenticity_score);`}
 
             {/* Example Response */}
             <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#10b981', marginTop: '40px', marginBottom: '20px' }}>Example Response</h3>
-            <pre style={{
-              background: '#1a1f2e',
-              padding: '24px',
-              borderRadius: '12px',
-              color: '#e8eaed',
-              fontSize: '13px',
-              overflowX: 'auto',
-              lineHeight: '1.6',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-            }}>
-{`{
+            <CodeBlock
+              code={`{
   "session_id": "sess_abc123",
   "state": "COMPLETED",
   "authenticity_score": 0.42,  // 42% - REJECTED
@@ -472,7 +545,8 @@ console.log('Score:', result.authenticity_score);`}
   ],
   "processed_at": "2024-01-15T10:30:45Z"
 }`}
-            </pre>
+              language="json"
+            />
           </div>
 
           {/* Error Codes */}

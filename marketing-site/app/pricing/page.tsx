@@ -3,9 +3,12 @@ import { Check, ArrowRight, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { useIsMobile } from '../utils/useIsMobile';
 import { MobileNav, DesktopNav } from '../components/Navigation';
+import { useState } from 'react';
 
 export default function PricingPage() {
   const isMobile = useIsMobile();
+  const [loading, setLoading] = useState<string | null>(null);
+
   const plans = [
     {
       name: 'Free',
@@ -21,6 +24,7 @@ export default function PricingPage() {
       ],
       cta: 'Get Started Free',
       popular: false,
+      variantId: process.env.NEXT_PUBLIC_LEMON_SQUEEZY_FREE_VARIANT_ID,
     },
     {
       name: 'Starter',
@@ -37,6 +41,7 @@ export default function PricingPage() {
       ],
       cta: 'Start Free Trial',
       popular: false,
+      variantId: process.env.NEXT_PUBLIC_LEMON_SQUEEZY_STARTER_VARIANT_ID,
     },
     {
       name: 'Growth',
@@ -53,6 +58,7 @@ export default function PricingPage() {
       ],
       cta: 'Start Free Trial',
       popular: true,
+      variantId: process.env.NEXT_PUBLIC_LEMON_SQUEEZY_GROWTH_VARIANT_ID,
     },
     {
       name: 'Pro',
@@ -70,6 +76,7 @@ export default function PricingPage() {
       ],
       cta: 'Start Free Trial',
       popular: false,
+      variantId: process.env.NEXT_PUBLIC_LEMON_SQUEEZY_PRO_VARIANT_ID,
     },
     {
       name: 'Enterprise',
@@ -87,8 +94,52 @@ export default function PricingPage() {
       ],
       cta: 'Contact Sales',
       popular: false,
+      variantId: null,
     },
   ];
+
+  const handleCheckout = async (plan: typeof plans[0]) => {
+    if (plan.name === 'Enterprise') {
+      window.location.href = '/contact';
+      return;
+    }
+
+    if (plan.name === 'Free') {
+      window.location.href = '/signup';
+      return;
+    }
+
+    if (!plan.variantId) {
+      alert('This plan is not configured yet. Please contact support.');
+      return;
+    }
+
+    setLoading(plan.name);
+
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          variantId: plan.variantId,
+          customData: {
+            plan: plan.name,
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error(data.error || 'Failed to create checkout');
+      }
+    } catch (error: any) {
+      alert(error.message || 'Failed to start checkout');
+      setLoading(null);
+    }
+  };
 
   return (
     <div>
@@ -204,25 +255,32 @@ export default function PricingPage() {
                 </span>
               </div>
 
-              <Link href="/signup" style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '10px',
-                padding: '14px 28px',
-                background: plan.popular 
-                  ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                  : 'rgba(45, 53, 72, 0.8)',
-                color: '#e8eaed',
-                borderRadius: '10px',
-                fontWeight: '600',
-                fontSize: '16px',
-                marginBottom: '32px',
-                border: plan.popular ? 'none' : '1px solid #374151',
-              }}>
-                {plan.cta}
+              <button
+                onClick={() => handleCheckout(plan)}
+                disabled={loading === plan.name}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  padding: '14px 28px',
+                  background: plan.popular 
+                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                    : 'rgba(45, 53, 72, 0.8)',
+                  color: '#e8eaed',
+                  borderRadius: '10px',
+                  fontWeight: '600',
+                  fontSize: '16px',
+                  marginBottom: '32px',
+                  border: plan.popular ? 'none' : '1px solid #374151',
+                  cursor: loading === plan.name ? 'wait' : 'pointer',
+                  opacity: loading === plan.name ? 0.7 : 1,
+                  width: '100%',
+                }}
+              >
+                {loading === plan.name ? 'Loading...' : plan.cta}
                 <ArrowRight size={18} />
-              </Link>
+              </button>
 
               <div style={{
                 paddingTop: '32px',

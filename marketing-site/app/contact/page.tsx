@@ -1,209 +1,186 @@
 'use client';
-import { useState } from 'react';
-import { Shield, Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Shield, Mail, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+import { useIsMobile } from '../utils/useIsMobile';
+import { MobileNav, DesktopNav } from '../components/Navigation';
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', company: '', message: '' });
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      alert('Message sent! We\'ll get back to you soon.');
-      setLoading(false);
-      setFormData({ name: '', email: '', company: '', message: '' });
-    }, 1500);
-  };
+  const isMobile = useIsMobile();
 
   return (
     <div>
-      <nav style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        background: 'rgba(15, 20, 25, 0.95)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(16, 185, 129, 0.2)',
-        zIndex: 1000,
+      {isMobile ? <MobileNav /> : <DesktopNav />}
+
+      <section style={{
+        marginTop: isMobile ? '60px' : '80px',
+        padding: isMobile ? '60px 20px' : '100px 40px',
+        textAlign: 'center',
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h1 style={{
+            fontSize: isMobile ? '36px' : '56px',
+            fontWeight: 'bold',
+            marginBottom: '24px',
+            color: '#e8eaed',
+          }}>
+            Contact Us
+          </h1>
+          <p style={{
+            fontSize: isMobile ? '18px' : '24px',
+            color: '#10b981',
+            marginBottom: '40px',
+          }}>
+            Get in touch with our team
+          </p>
+        </div>
+      </section>
+
+      <section style={{ padding: isMobile ? '40px 20px' : '60px 40px', background: 'rgba(26, 31, 46, 0.4)' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: isMobile ? '24px' : '32px' }}>
+            {[
+              {
+                icon: Mail,
+                title: 'Sales & General Inquiries',
+                email: 'sales@framesentinel.com',
+                description: 'Questions about pricing, features, or demos',
+              },
+              {
+                icon: Shield,
+                title: 'Security & Compliance',
+                email: 'security@framesentinel.com',
+                description: 'Security questionnaires and compliance information',
+              },
+              {
+                icon: MessageSquare,
+                title: 'Technical Support',
+                email: 'support@framesentinel.com',
+                description: 'API integration help and technical questions',
+              },
+              {
+                icon: Mail,
+                title: 'Partnerships',
+                email: 'partnerships@framesentinel.com',
+                description: 'Integration partnerships and collaborations',
+              },
+            ].map((item, idx) => (
+              <div key={idx} style={{
+                padding: '32px',
+                background: 'rgba(26, 31, 46, 0.6)',
+                borderRadius: '16px',
+                border: '1px solid rgba(16, 185, 129, 0.2)',
+              }}>
+                <item.icon size={40} color="#10b981" style={{ marginBottom: '16px' }} />
+                <h3 style={{ fontSize: isMobile ? '18px' : '20px', color: '#e8eaed', marginBottom: '12px', fontWeight: '600' }}>
+                  {item.title}
+                </h3>
+                <p style={{ color: '#9ca3af', fontSize: isMobile ? '14px' : '16px', marginBottom: '16px', lineHeight: '1.6' }}>
+                  {item.description}
+                </p>
+                <a href={`mailto:${item.email}`} style={{
+                  color: '#10b981',
+                  fontSize: isMobile ? '14px' : '16px',
+                  fontWeight: '600',
+                  textDecoration: 'none',
+                }}>
+                  {item.email}
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: isMobile ? '40px 20px' : '60px 40px' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{
+            fontSize: isMobile ? '28px' : '36px',
+            fontWeight: 'bold',
+            marginBottom: '24px',
+            color: '#e8eaed',
+          }}>
+            Enterprise customers
+          </h2>
+          <p style={{
+            fontSize: isMobile ? '16px' : '18px',
+            color: '#9ca3af',
+            marginBottom: '32px',
+            lineHeight: '1.8',
+          }}>
+            For enterprise plans, custom integrations, or volume pricing, contact our sales team directly.
+          </p>
+          <a href="mailto:enterprise@framesentinel.com" style={{
+            padding: isMobile ? '14px 32px' : '16px 40px',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: '#e8eaed',
+            borderRadius: '12px',
+            fontWeight: '600',
+            fontSize: isMobile ? '16px' : '18px',
+            display: 'inline-block',
+            textDecoration: 'none',
+            boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)',
+          }}>
+            Contact Enterprise Sales
+          </a>
+        </div>
+      </section>
+
+      <footer style={{
+        padding: isMobile ? '40px 20px' : '60px 40px',
+        borderTop: '1px solid rgba(16, 185, 129, 0.2)',
       }}>
         <div style={{
           maxWidth: '1200px',
           margin: '0 auto',
-          padding: '20px 40px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
+          gap: isMobile ? '32px' : '40px',
         }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Shield size={32} color="#10b981" />
-            <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>FrameSentinel</span>
-          </Link>
-        </div>
-      </nav>
-
-      <section style={{ marginTop: '80px', padding: '80px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px' }}>
           <div>
-            <h1 style={{
-              fontSize: '48px',
-              fontWeight: 'bold',
-              marginBottom: '20px',
-              background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-              Get in Touch
-            </h1>
-            <p style={{ fontSize: '18px', color: '#9ca3af', marginBottom: '40px' }}>
-              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <Shield size={28} color="#10b981" />
+              <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>FrameSentinel</span>
+            </div>
+            <p style={{ color: '#9ca3af', fontSize: '14px' }}>
+              Enterprise-grade AI fraud detection for video KYC
             </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              {[
-                { icon: Mail, title: 'Email', value: 'support@framesentinel.com' },
-                { icon: Phone, title: 'Phone', value: '+1 (555) 123-4567' },
-                { icon: MapPin, title: 'Office', value: 'San Francisco, CA' },
-              ].map((contact, idx) => (
-                <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <div style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '12px',
-                    background: 'rgba(16, 185, 129, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    <contact.icon size={24} color="#10b981" />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '4px' }}>{contact.title}</div>
-                    <div style={{ fontSize: '16px', color: '#e8eaed', fontWeight: '600' }}>{contact.value}</div>
-                  </div>
-                </div>
-              ))}
+          </div>
+          <div>
+            <h4 style={{ color: '#e8eaed', marginBottom: '16px', fontSize: '16px', fontWeight: '600' }}>Product</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <Link href="/features" style={{ color: '#9ca3af', fontSize: '14px' }}>Features</Link>
+              <Link href="/pricing" style={{ color: '#9ca3af', fontSize: '14px' }}>Pricing</Link>
+              <Link href="/docs" style={{ color: '#9ca3af', fontSize: '14px' }}>Documentation</Link>
             </div>
           </div>
-
-          <div style={{
-            padding: '40px',
-            background: 'rgba(26, 31, 46, 0.8)',
-            borderRadius: '16px',
-            border: '1px solid rgba(16, 185, 129, 0.2)',
-          }}>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>
-                  Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '14px',
-                    background: '#2d3548',
-                    border: '1px solid #374151',
-                    borderRadius: '10px',
-                    color: '#e8eaed',
-                    fontSize: '16px',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>
-                  Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '14px',
-                    background: '#2d3548',
-                    border: '1px solid #374151',
-                    borderRadius: '10px',
-                    color: '#e8eaed',
-                    fontSize: '16px',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>
-                  Company
-                </label>
-                <input
-                  type="text"
-                  value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '14px',
-                    background: '#2d3548',
-                    border: '1px solid #374151',
-                    borderRadius: '10px',
-                    color: '#e8eaed',
-                    fontSize: '16px',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '600', color: '#e8eaed' }}>
-                  Message
-                </label>
-                <textarea
-                  required
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  rows={5}
-                  style={{
-                    width: '100%',
-                    padding: '14px',
-                    background: '#2d3548',
-                    border: '1px solid #374151',
-                    borderRadius: '10px',
-                    color: '#e8eaed',
-                    fontSize: '16px',
-                    resize: 'vertical',
-                  }}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  padding: '16px',
-                  background: loading ? '#6b7280' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  color: '#e8eaed',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                }}
-              >
-                {loading ? 'Sending...' : 'Send Message'}
-                {!loading && <Send size={20} />}
-              </button>
-            </form>
+          <div>
+            <h4 style={{ color: '#e8eaed', marginBottom: '16px', fontSize: '16px', fontWeight: '600' }}>Company</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <Link href="/about" style={{ color: '#9ca3af', fontSize: '14px' }}>About</Link>
+              <Link href="/contact" style={{ color: '#9ca3af', fontSize: '14px' }}>Contact</Link>
+            </div>
+          </div>
+          <div>
+            <h4 style={{ color: '#e8eaed', marginBottom: '16px', fontSize: '16px', fontWeight: '600' }}>Legal</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <Link href="/privacy" style={{ color: '#9ca3af', fontSize: '14px' }}>Privacy</Link>
+              <Link href="/terms" style={{ color: '#9ca3af', fontSize: '14px' }}>Terms</Link>
+              <Link href="/security" style={{ color: '#9ca3af', fontSize: '14px' }}>Security</Link>
+            </div>
           </div>
         </div>
-      </section>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '40px auto 0',
+          paddingTop: '40px',
+          borderTop: '1px solid rgba(16, 185, 129, 0.2)',
+          textAlign: 'center',
+          color: '#6b7280',
+          fontSize: '14px',
+        }}>
+          © {new Date().getFullYear()} FrameSentinel. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }
