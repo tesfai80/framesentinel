@@ -1,5 +1,5 @@
 'use client';
-import { Shield, Zap, Lock, CheckCircle, ArrowRight, Play, BarChart3, Globe, Upload, Image, Cpu, Target, Bell, Key, Clock, Database, FileCheck, Award, Cloud, ShieldCheck, Building2, Coins, ShoppingCart, Users } from 'lucide-react';
+import { Shield, Zap, Lock, CheckCircle, ArrowRight, Play, BarChart3, Globe, Upload, Image, Cpu, Target, Bell, Key, Clock, Database, FileCheck, Award, Cloud, ShieldCheck, Building2, Coins, ShoppingCart, Users, Webhook, Layers, UserCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useIsMobile } from './utils/useIsMobile';
 import { MobileNav, DesktopNav } from './components/Navigation';
@@ -528,19 +528,78 @@ export default function HomePage() {
           }}>
             Works with modern infrastructure
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: isMobile ? '16px' : '24px', maxWidth: '900px', margin: '0 auto' }}>
-            {['REST API', 'Webhooks', 'AWS', 'GCP', 'Azure', 'Kubernetes', 'Serverless', 'Cloud Storage', 'Identity Providers', 'Fraud Systems'].map((tech) => (
-              <div key={tech} style={{
-                padding: isMobile ? '16px' : '20px',
-                background: 'rgba(26, 31, 46, 0.6)',
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)', gap: isMobile ? '16px' : '24px', maxWidth: '1000px', margin: '0 auto' }}>
+            {[
+              { name: 'AWS', logo: '/logos/aws.svg', hasLogo: true },
+              { name: 'GCP', logo: '/logos/gcp.svg', hasLogo: true },
+              { name: 'Azure', logo: '/logos/azure.svg', hasLogo: true },
+              { name: 'Kubernetes', logo: '/logos/kubernetes.svg', hasLogo: true },
+              { name: 'Docker', logo: '/logos/docker.svg', hasLogo: true },
+              { name: 'Webhooks', logo: '/logos/webhooks.svg', hasLogo: true },
+              { name: 'Cloud Storage', logo: '/logos/Cloud_Storage-512-color.svg', hasLogo: true },
+              { name: 'REST API', icon: Webhook, hasLogo: false },
+              { name: 'Serverless', icon: Zap, hasLogo: false },
+              { name: 'Identity Providers', icon: UserCheck, hasLogo: false },
+            ].map((tech) => (
+              <div key={tech.name} style={{
+                padding: isMobile ? '16px 12px' : '20px',
+                background: 'linear-gradient(135deg, rgba(26, 31, 46, 0.8) 0%, rgba(31, 41, 55, 0.8) 100%)',
                 borderRadius: '12px',
-                border: '1px solid rgba(16, 185, 129, 0.2)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
                 textAlign: 'center',
-                color: '#10b981',
-                fontSize: isMobile ? '13px' : '14px',
-                fontWeight: '600',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#10b981';
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(16, 185, 129, 0.3)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(26, 31, 46, 0.9) 100%)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(26, 31, 46, 0.8) 0%, rgba(31, 41, 55, 0.8) 100%)';
               }}>
-                {tech}
+                {tech.hasLogo ? (
+                  <div style={{
+                    background: 'white',
+                    borderRadius: '8px',
+                    padding: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <img 
+                      src={tech.logo} 
+                      alt={tech.name}
+                      style={{ 
+                        width: isMobile ? '32px' : '40px', 
+                        height: isMobile ? '32px' : '40px',
+                        objectFit: 'contain',
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div style={{
+                    background: 'white',
+                    borderRadius: '8px',
+                    padding: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <tech.icon size={isMobile ? 32 : 40} color="#10b981" strokeWidth={1.5} />
+                  </div>
+                )}
+                <span style={{ color: '#e8eaed', fontSize: isMobile ? '12px' : '14px', fontWeight: '600' }}>
+                  {tech.name}
+                </span>
               </div>
             ))}
           </div>
