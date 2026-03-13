@@ -37,6 +37,7 @@ class APIKeyMiddleware:
             "/openapi.json",
             "/api/v1/auth/login",
             "/api/v1/auth/register",
+            "/api/v1/tenants/",
             "/api/v1/usage/credits",
         ]
         
@@ -92,27 +93,27 @@ class APIKeyMiddleware:
             # Track request start time
             start_time = time.time()
             
-            # Process request
-            await self.app(scope, receive, send)
+            # Track usage BEFORE processing for session creation
+            should_track = request.url.path.startswith("/api/v1/sessions") and request.method == "POST" and not request.url.path.endswith("/upload")
             
-            # Track usage (only for session creation endpoints)
-            if request.url.path.startswith("/api/v1/sessions") and request.method == "POST":
-                processing_time = int((time.time() - start_time) * 1000)
+            if should_track:
+                # Consume credit immediately
+                APIKeyService.consume_credit(db, db_key.tenant_id, 1.0)
                 
                 # Record usage
                 usage = UsageRecord(
                     tenant_id=db_key.tenant_id,
-                    session_id=str(uuid.uuid4()),  # Will be updated with actual session_id
+                    session_id=str(uuid.uuid4()),
                     api_key_id=db_key.id,
-                    processing_time_ms=processing_time,
+                    processing_time_ms=0,
                     cost_credits=1.0
                 )
                 db.add(usage)
-                
-                # Consume credit
-                APIKeyService.consume_credit(db, db_key.tenant_id, 1.0)
-                
                 db.commit()
+                print(f"[CREDITS] Consumed 1 credit for tenant {db_key.tenant_id}. Remaining: {remaining - 1}")
+            
+            # Process request
+            await self.app(scope, receive, send)
         
         except Exception as e:
             print(f"Middleware error: {e}")

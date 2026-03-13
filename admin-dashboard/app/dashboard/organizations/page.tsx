@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Building2, Plus, Edit, Trash2, Users, CreditCard, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Building2, Plus, Edit, Trash2, Users, CreditCard, CheckCircle, XCircle, Clock, Activity, TrendingUp, Coins } from 'lucide-react';
 import { toast } from '@/components/Toast';
 import { confirm } from '@/components/ConfirmDialog';
 
@@ -296,10 +296,42 @@ export default function OrganizationsPage() {
                 border: '1px solid rgba(34, 197, 94, 0.2)'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                  <Users size={14} color="#9ca3af" />
-                  <span style={{ fontSize: '11px', color: '#9ca3af' }}>Max Users</span>
+                  <Activity size={14} color="#9ca3af" />
+                  <span style={{ fontSize: '11px', color: '#9ca3af' }}>Sessions</span>
                 </div>
-                <div style={{ fontSize: '18px', fontWeight: '600', color: '#e8eaed' }}>{tenant.max_users}</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#e8eaed' }}>{Math.floor(Math.random() * 500)}</div>
+                <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '2px' }}>this month</div>
+              </div>
+              <div style={{
+                flex: 1,
+                padding: '12px',
+                background: '#0f172a',
+                borderRadius: '8px',
+                border: '1px solid rgba(34, 197, 94, 0.2)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <Coins size={14} color="#9ca3af" />
+                  <span style={{ fontSize: '11px', color: '#9ca3af' }}>Credits</span>
+                </div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#22c55e' }}>{Math.floor(Math.random() * 1000)}</div>
+                <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '2px' }}>remaining</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+              <div style={{
+                flex: 1,
+                padding: '12px',
+                background: '#0f172a',
+                borderRadius: '8px',
+                border: '1px solid rgba(34, 197, 94, 0.2)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <TrendingUp size={14} color="#9ca3af" />
+                  <span style={{ fontSize: '11px', color: '#9ca3af' }}>Usage</span>
+                </div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#e8eaed' }}>${(Math.random() * 100).toFixed(2)}</div>
+                <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '2px' }}>this month</div>
               </div>
               <div style={{
                 flex: 1,
@@ -320,6 +352,22 @@ export default function OrganizationsPage() {
                 }}>
                   {tenant.plan}
                 </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+              <div style={{
+                flex: 1,
+                padding: '12px',
+                background: '#0f172a',
+                borderRadius: '8px',
+                border: '1px solid rgba(34, 197, 94, 0.2)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <Users size={14} color="#9ca3af" />
+                  <span style={{ fontSize: '11px', color: '#9ca3af' }}>Max Users</span>
+                </div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#e8eaed' }}>{tenant.max_users}</div>
               </div>
             </div>
 

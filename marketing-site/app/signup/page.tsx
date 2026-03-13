@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Shield, Mail, Lock, User, Building, ArrowRight, Check } from 'lucide-react';
+import { Shield, Mail, Lock, User, Building, ArrowRight, Check, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { CustomSelect } from '../components/CustomSelect';
 import { useIsMobile } from '../utils/useIsMobile';
@@ -18,27 +18,49 @@ export default function SignUpPage() {
     plan: 'free',
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [oauthProcessed, setOauthProcessed] = useState(false);
   const isMobile = useIsMobile();
   const router = useRouter();
 
+  // Prevent any auto-redirect from login page
   useEffect(() => {
-    // Check if user just signed up with OAuth
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        toast.success('Sign up successful! Redirecting...');
-        setTimeout(() => {
-          router.push('/login');
-        }, 1500);
-      }
-    });
-  }, [router]);
+    // Clear any redirect flags
+    sessionStorage.removeItem('redirectAfterLogin');
+    localStorage.removeItem('redirectAfterLogin');
+  }, []);
+
+  useEffect(() => {
+    // Prevent auto-redirect on signup page
+    const urlParams = new URLSearchParams(window.location.search);
+    const isOAuthCallback = urlParams.has('code') || window.location.hash.includes('access_token');
+    const isOAuthSignup = urlParams.get('oauth') === 'true';
+    
+    if (isOAuthCallback && isOAuthSignup && !oauthProcessed) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          setOauthProcessed(true);
+          toast.success('OAuth sign up successful! Please complete your profile.');
+          // Pre-fill email from OAuth
+          setFormData(prev => ({
+            ...prev,
+            email: session.user.email || '',
+            fullName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || '',
+          }));
+        }
+      });
+    }
+  }, [oauthProcessed]);
 
   const handleOAuthSignup = async (provider: 'google' | 'github') => {
     try {
+      // Clear any existing session before OAuth signup
+      await supabase.auth.signOut();
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/signup`,
+          redirectTo: `${window.location.origin}/signup?oauth=true`,
           scopes: provider === 'github' ? 'read:user user:email' : undefined,
         },
       });
@@ -50,12 +72,13 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setLoading(true);
     
-    console.log('Submitting with plan:', formData.plan);
-    
     try {
-      // Create tenant with admin user
+      // Sign out from Supabase to prevent auto-redirect
+      await supabase.auth.signOut();
+      
       const tenantResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/tenants/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -73,18 +96,20 @@ export default function SignUpPage() {
       }
 
       const tenantData = await tenantResponse.json();
-      console.log('Tenant created:', tenantData);
       
-      toast.success('Sign up successful! Redirecting to dashboard...');
+      toast.success('Sign up successful! You can now login to your dashboard.');
       
-      // Wait a bit before redirect
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Redirect to login page instead of auto-login to avoid CORS
-      router.push('/login');
+      setFormData({
+        fullName: '',
+        email: '',
+        company: '',
+        password: '',
+        plan: 'free',
+      });
       
     } catch (err: any) {
-      console.error('Signup error:', err);
       toast.error(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
@@ -322,13 +347,32 @@ export default function SignUpPage() {
                 transform: 'translateY(-50%)',
               }} />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="••••••••"
                 className="signup-input"
+                style={{ paddingRight: '48px' }}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '14px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                {showPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
+              </button>
             </div>
             <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '6px' }}>
               Must be at least 8 characters

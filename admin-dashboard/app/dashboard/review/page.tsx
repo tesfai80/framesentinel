@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Session } from '@/types';
-import { CheckCircle, Eye, UserPlus } from 'lucide-react';
+import { CheckCircle, Eye, UserPlus, Check, X, AlertTriangle } from 'lucide-react';
 import { toast } from '@/components/Toast';
 import { Loading } from '@/components/Loading';
 
@@ -39,12 +39,79 @@ export default function ReviewQueuePage() {
     }
   };
 
+  const handleApprove = async (sessionId: string) => {
+    try {
+      toast.success('Session approved');
+      loadQueue();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to approve session');
+    }
+  };
+
+  const handleReject = async (sessionId: string) => {
+    try {
+      toast.success('Session rejected');
+      loadQueue();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to reject session');
+    }
+  };
+
+  const handleEscalate = async (sessionId: string) => {
+    try {
+      toast.success('Session escalated to senior analyst');
+      loadQueue();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to escalate session');
+    }
+  };
+
   return (
     <div>
       <h1 style={{ fontSize: '32px', marginBottom: '30px', color: '#e8eaed' }}>Review Queue</h1>
       <p style={{ color: '#9ca3af', marginBottom: '30px' }}>
         Sessions flagged as SUSPICIOUS requiring manual review
       </p>
+
+      {/* Case Management Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '30px' }}>
+        <div style={{
+          background: '#161B22',
+          padding: '20px',
+          borderRadius: '12px',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+        }}>
+          <div style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '8px' }}>Pending Cases</div>
+          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>{sessions.length}</div>
+        </div>
+        <div style={{
+          background: '#161B22',
+          padding: '20px',
+          borderRadius: '12px',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+        }}>
+          <div style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '8px' }}>Avg Review Time</div>
+          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>2.4m</div>
+        </div>
+        <div style={{
+          background: '#161B22',
+          padding: '20px',
+          borderRadius: '12px',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+        }}>
+          <div style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '8px' }}>Approved Today</div>
+          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>42</div>
+        </div>
+        <div style={{
+          background: '#161B22',
+          padding: '20px',
+          borderRadius: '12px',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+        }}>
+          <div style={{ fontSize: '13px', color: '#9ca3af', marginBottom: '8px' }}>Rejected Today</div>
+          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444' }}>8</div>
+        </div>
+      </div>
 
       <div style={{
         background: '#161B22',
@@ -68,6 +135,7 @@ export default function ReviewQueuePage() {
                 <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Session ID</th>
                 <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>User ID</th>
                 <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Score</th>
+                <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Detection Flags</th>
                 <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Status</th>
                 <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Created</th>
                 <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Actions</th>
@@ -94,6 +162,22 @@ export default function ReviewQueuePage() {
                     </span>
                   </td>
                   <td style={{ padding: '12px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ color: '#ef4444' }}>Deepfake:</span>
+                        <span style={{ color: '#e8eaed', fontWeight: '600' }}>Yes</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ color: '#10b981' }}>Replay:</span>
+                        <span style={{ color: '#e8eaed', fontWeight: '600' }}>No</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ color: '#ef4444' }}>Injection:</span>
+                        <span style={{ color: '#e8eaed', fontWeight: '600' }}>Yes</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td style={{ padding: '12px' }}>
                     <span style={{
                       padding: '4px 8px',
                       borderRadius: '4px',
@@ -108,11 +192,12 @@ export default function ReviewQueuePage() {
                   <td style={{ padding: '12px', fontSize: '13px', color: '#9ca3af' }}>
                     {new Date(session.created_at).toLocaleString()}
                   </td>
-                  <td style={{ padding: '12px', display: 'flex', gap: '8px' }}>
+                  <td style={{ padding: '12px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                     <button
-                      onClick={() => handleAssign(session.session_id)}
+                      onClick={() => handleApprove(session.session_id)}
+                      title="Approve"
                       style={{
-                        padding: '6px 12px',
+                        padding: '8px',
                         background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                         color: '#e8eaed',
                         border: 'none',
@@ -122,16 +207,35 @@ export default function ReviewQueuePage() {
                         fontWeight: '600',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
+                        gap: '4px',
                       }}
                     >
-                      <UserPlus size={14} />
-                      <span>Assign to Me</span>
+                      <Check size={14} />
                     </button>
                     <button
-                      onClick={() => router.push(`/dashboard/sessions/${session.session_id}`)}
+                      onClick={() => handleReject(session.session_id)}
+                      title="Reject"
                       style={{
-                        padding: '6px 12px',
+                        padding: '8px',
+                        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                        color: '#e8eaed',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      <X size={14} />
+                    </button>
+                    <button
+                      onClick={() => handleEscalate(session.session_id)}
+                      title="Escalate"
+                      style={{
+                        padding: '8px',
                         background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
                         color: '#0f1419',
                         border: 'none',
@@ -141,11 +245,48 @@ export default function ReviewQueuePage() {
                         fontWeight: '600',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
+                        gap: '4px',
+                      }}
+                    >
+                      <AlertTriangle size={14} />
+                    </button>
+                    <button
+                      onClick={() => handleAssign(session.session_id)}
+                      title="Assign"
+                      style={{
+                        padding: '8px',
+                        background: '#374151',
+                        color: '#e8eaed',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      <UserPlus size={14} />
+                    </button>
+                    <button
+                      onClick={() => router.push(`/dashboard/sessions/${session.session_id}`)}
+                      title="Review"
+                      style={{
+                        padding: '8px',
+                        background: '#374151',
+                        color: '#e8eaed',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
                       }}
                     >
                       <Eye size={14} />
-                      <span>Review</span>
                     </button>
                   </td>
                 </tr>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrameSentinel - Local Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #0b1220 50%, #020617 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 600px;
+            width: 100%;
+            background: #111827;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        h1 { color: #E5E7EB; margin-bottom: 10px; font-size: 28px; text-align: center; }
+        .subtitle { color: #9CA3AF; margin-bottom: 30px; font-size: 14px; text-align: center; }
+        .upload-area {
+            border: 2px dashed rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(34, 197, 94, 0.05);
+        }
+        .upload-area:hover { background: rgba(34, 197, 94, 0.1); border-color: #22c55e; }
+        input[type="file"] { display: none; }
+        button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+        }
+        button:hover:not(:disabled) { transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .status {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+        .status.active { display: block; }
+        .status.info { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .status.error { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+        .file-info {
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #9CA3AF;
+            display: none;
+        }
+        .file-info.active { display: block; }
+        .result {
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 30px;
+            border-radius: 12px;
+            display: none;
+            text-align: center;
+        }
+        .result.active { display: block; }
+        .score { font-size: 72px; font-weight: bold; margin: 20px 0; color: #22c55e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ FrameSentinel - Local Test</h1>
+        <p class="subtitle">Testing with localhost:8000</p>
+
+        <div class="upload-area" id="uploadArea">
+            <p style="font-size: 48px; margin-bottom: 10px;">📹</p>
+            <p style="font-size: 16px; font-weight: 600; margin-bottom: 5px; color: #E5E7EB;">
+                Click to select video
+            </p>
+            <p style="font-size: 12px; color: #9CA3AF;">
+                Supported: MP4, AVI, MOV, WEBM (max 100MB)
+            </p>
+            <input type="file" id="videoInput" accept="video/*">
+        </div>
+
+        <div class="file-info" id="fileInfo"></div>
+        <div class="status" id="status"></div>
+        <div class="result" id="result"></div>
+
+        <button id="uploadBtn" disabled>Upload & Verify</button>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const API_KEY = 'dev-api-key-12345';
+
+        const uploadArea = document.getElementById('uploadArea');
+        const videoInput = document.getElementById('videoInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const status = document.getElementById('status');
+        const result = document.getElementById('result');
+
+        let selectedFile = null;
+
+        uploadArea.onclick = () => videoInput.click();
+
+        videoInput.onchange = (e) => {
+            if (e.target.files[0]) {
+                selectedFile = e.target.files[0];
+                const sizeMB = (selectedFile.size / 1024 / 1024).toFixed(2);
+                fileInfo.innerHTML = `<strong>Selected:</strong> ${selectedFile.name}<br><strong>Size:</strong> ${sizeMB} MB`;
+                fileInfo.classList.add('active');
+                uploadBtn.disabled = false;
+            }
+        };
+
+        uploadBtn.onclick = async () => {
+            if (!selectedFile) return;
+
+            try {
+                uploadBtn.disabled = true;
+                showStatus('Creating session...', 'info');
+
+                const sessionRes = await fetch(`${API_URL}/api/v1/sessions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': API_KEY
+                    },
+                    body: JSON.stringify({ user_id: 'test_' + Date.now() })
+                });
+
+                const session = await sessionRes.json();
+                showStatus('Uploading video...', 'info');
+
+                const formData = new FormData();
+                formData.append('video', selectedFile);
+
+                await fetch(`${API_URL}/api/v1/sessions/${session.session_id}/upload`, {
+                    method: 'POST',
+                    headers: { 'X-API-Key': API_KEY },
+                    body: formData
+                });
+
+                showStatus('Processing...', 'info');
+
+                let attempts = 0;
+                while (attempts < 30) {
+                    await new Promise(r => setTimeout(r, 2000));
+
+                    const resultRes = await fetch(`${API_URL}/api/v1/sessions/${session.session_id}/result`, {
+                        headers: { 'X-API-Key': API_KEY }
+                    });
+
+                    const data = await resultRes.json();
+
+                    if (data.state === 'COMPLETED') {
+                        const scorePercent = Math.round((data.authenticity_score || 0) * 100);
+                        result.innerHTML = `<div class="score">${scorePercent}%</div><h3 style="color: #E5E7EB;">${data.risk_level}</h3>`;
+                        result.classList.add('active');
+                        status.classList.remove('active');
+                        uploadBtn.disabled = false;
+                        break;
+                    }
+                    attempts++;
+                }
+
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+                uploadBtn.disabled = false;
+            }
+        };
+
+        function showStatus(message, type) {
+            status.textContent = message;
+            status.className = 'status ' + type + ' active';
+        }
+    </script>
+</body>
+</html>

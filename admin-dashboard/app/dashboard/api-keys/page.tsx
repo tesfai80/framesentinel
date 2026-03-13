@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Key, Plus, Copy, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Key, Plus, Copy, Trash2, AlertCircle, CheckCircle, RefreshCw, Activity, Clock } from 'lucide-react';
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
 import { confirm } from '@/components/ConfirmDialog';
@@ -86,6 +86,27 @@ export default function APIKeysPage() {
         loadKeys();
       } catch (error: any) {
         toast.error(error.message || 'Failed to revoke API key');
+      }
+    }
+  };
+
+  const handleRotateKey = async (id: string, name: string) => {
+    const confirmed = await confirm(
+      'Rotate API Key',
+      `Are you sure you want to rotate "${name}"? The old key will be revoked and a new one will be generated.`
+    );
+
+    if (confirmed) {
+      try {
+        const response = await api.createAPIKey({ name: `${name} (Rotated)` });
+        await api.revokeAPIKey(id);
+        setNewKeyValue(response.plain_key);
+        setShowNewKey(true);
+        setShowCreateModal(true);
+        toast.success('API key rotated successfully');
+        loadKeys();
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to rotate API key');
       }
     }
   };
@@ -187,34 +208,76 @@ export default function APIKeysPage() {
             </div>
 
             <div style={{ fontSize: isMobile ? '11px' : '12px', color: '#6b7280', marginBottom: '12px' }}>
-              <div>Created: {new Date(key.created_at).toLocaleDateString()}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                <Clock size={12} />
+                <span>Created: {new Date(key.created_at).toLocaleDateString()}</span>
+              </div>
               {key.last_used_at && (
-                <div>Last used: {new Date(key.last_used_at).toLocaleDateString()}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                  <Activity size={12} />
+                  <span>Last used: {new Date(key.last_used_at).toLocaleDateString()}</span>
+                </div>
               )}
+              <div style={{ marginTop: '8px' }}>
+                <span style={{
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  fontSize: '10px',
+                  fontWeight: '600',
+                  background: key.name.toLowerCase().includes('prod') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                  color: key.name.toLowerCase().includes('prod') ? '#ef4444' : '#3b82f6',
+                  border: `1px solid ${key.name.toLowerCase().includes('prod') ? '#ef4444' : '#3b82f6'}`,
+                }}>
+                  {key.name.toLowerCase().includes('prod') ? 'Production' : 'Development'}
+                </span>
+              </div>
             </div>
 
             {key.is_active && (
-              <button
-                onClick={() => handleRevokeKey(key.id, key.name)}
-                style={{
-                  width: '100%',
-                  padding: isMobile ? '10px' : '8px',
-                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                  color: '#e8eaed',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: isMobile ? '13px' : '12px',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                }}
-              >
-                <Trash2 size={14} />
-                <span>Revoke Key</span>
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => handleRotateKey(key.id, key.name)}
+                  style={{
+                    flex: 1,
+                    padding: isMobile ? '10px' : '8px',
+                    background: '#374151',
+                    color: '#e8eaed',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: isMobile ? '13px' : '12px',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <RefreshCw size={14} />
+                  <span>Rotate</span>
+                </button>
+                <button
+                  onClick={() => handleRevokeKey(key.id, key.name)}
+                  style={{
+                    flex: 1,
+                    padding: isMobile ? '10px' : '8px',
+                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                    color: '#e8eaed',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: isMobile ? '13px' : '12px',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <Trash2 size={14} />
+                  <span>Revoke</span>
+                </button>
+              </div>
             )}
           </div>
         ))}

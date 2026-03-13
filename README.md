@@ -132,6 +132,7 @@ Edit `src/config/settings.py`:
 - File validation
 - Secure storage
 - Session isolation
+- **Automatic Video Deletion**: Videos are automatically deleted immediately after processing. No permanent storage of user videos.
 
 ## License
 

@@ -166,7 +166,8 @@ export default function UsersPage() {
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Email</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Role</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Tenant</th>
-              <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Created</th>
+              <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Last Login</th>
+              <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Status</th>
               <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Actions</th>
             </tr>
           </thead>
@@ -203,7 +204,19 @@ export default function UsersPage() {
                 </td>
                 <td style={{ padding: '12px', fontSize: '13px', color: '#e8eaed' }}>{user.tenant_id}</td>
                 <td style={{ padding: '12px', fontSize: '13px', color: '#9ca3af' }}>
-                  {new Date(user.created_at).toLocaleDateString()}
+                  {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}
+                </td>
+                <td style={{ padding: '12px' }}>
+                  <span style={{
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    background: user.is_active ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                    color: user.is_active ? '#10b981' : '#6b7280',
+                    border: `1px solid ${user.is_active ? '#10b981' : '#6b7280'}`,
+                  }}>
+                    {user.is_active ? 'Active' : 'Inactive'}
+                  </span>
                 </td>
                 <td style={{ padding: '12px', display: 'flex', gap: '8px' }}>
                   <button

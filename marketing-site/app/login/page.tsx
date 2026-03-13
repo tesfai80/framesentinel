@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Shield, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Shield, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast, ToastContainer } from '../components/Toast';
@@ -9,6 +9,7 @@ import { supabase } from '../../lib/supabase';
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -62,13 +63,14 @@ export default function LoginPage() {
             id: session.user.id,
           };
           
-          localStorage.setItem('user', JSON.stringify(userData));
-          localStorage.setItem('token', backendUser?.token || session.access_token);
+          // Encode user data and token for URL transfer
+          const userEncoded = encodeURIComponent(JSON.stringify(userData));
+          const tokenEncoded = encodeURIComponent(backendUser?.token || session.access_token);
           
           // Redirect to dashboard
           const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || 'http://localhost:3001';
           setTimeout(() => {
-            window.location.href = `${dashboardUrl}/dashboard`;
+            window.location.href = `${dashboardUrl}/auth-callback?user=${userEncoded}&token=${tokenEncoded}`;
           }, 500);
         } catch (error) {
           console.error('OAuth login error:', error);
@@ -109,15 +111,17 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('token', data.token);
+      
+      // Encode user data and token for URL transfer
+      const userEncoded = encodeURIComponent(JSON.stringify(data.user));
+      const tokenEncoded = encodeURIComponent(data.token);
       
       toast.success('Login successful! Redirecting...');
       
-      // Redirect to Admin Dashboard after successful login
+      // Redirect to Admin Dashboard with auth data
       const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || 'http://localhost:3001';
       setTimeout(() => {
-        window.location.href = `${dashboardUrl}/dashboard`;
+        window.location.href = `${dashboardUrl}/auth-callback?user=${userEncoded}&token=${tokenEncoded}`;
       }, 1000);
     } catch (err) {
       toast.error('Invalid email or password');
@@ -259,14 +263,14 @@ export default function LoginPage() {
               <div style={{ position: 'relative' }}>
                 <Lock size={20} color="#9ca3af" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="••••••••"
                   style={{
                     width: '100%',
-                    padding: '14px 14px 14px 48px',
+                    padding: '14px 48px 14px 48px',
                     background: '#2d3548',
                     border: '1px solid #374151',
                     borderRadius: '10px',
@@ -274,6 +278,24 @@ export default function LoginPage() {
                     fontSize: '16px',
                   }}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '14px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  {showPassword ? <EyeOff size={20} color="#9ca3af" /> : <Eye size={20} color="#9ca3af" />}
+                </button>
               </div>
             </div>
 

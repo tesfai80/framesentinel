@@ -100,19 +100,20 @@ export default function AuditLogsPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #374151' }}>
-                <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>ID</th>
+                <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Timestamp</th>
                 <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>User</th>
                 <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Action</th>
                 <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Resource</th>
-                <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Resource ID</th>
-                <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>Created</th>
+                <th style={{ padding: '12px', textAlign: 'left', color: '#9ca3af', fontSize: '14px' }}>IP Address</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log) => (
                 <tr key={log.id} style={{ borderBottom: '1px solid #374151' }}>
-                  <td style={{ padding: '12px', fontSize: '13px', color: '#e8eaed' }}>{log.id}</td>
-                  <td style={{ padding: '12px', fontSize: '13px', color: '#e8eaed' }}>{log.user_id}</td>
+                  <td style={{ padding: '12px', fontSize: '13px', color: '#9ca3af' }}>
+                    {new Date(log.created_at).toLocaleString()}
+                  </td>
+                  <td style={{ padding: '12px', fontSize: '13px', color: '#e8eaed', fontWeight: '600' }}>{log.user_id}</td>
                   <td style={{ padding: '12px', fontSize: '13px' }}>
                     <span style={{
                       padding: '4px 8px',
@@ -125,12 +126,11 @@ export default function AuditLogsPage() {
                       {log.action}
                     </span>
                   </td>
-                  <td style={{ padding: '12px', fontSize: '13px', color: '#e8eaed' }}>{log.resource_type}</td>
-                  <td style={{ padding: '12px', fontSize: '13px', fontFamily: 'monospace', color: '#e8eaed' }}>
-                    {log.resource_id.substring(0, 8)}...
+                  <td style={{ padding: '12px', fontSize: '13px', color: '#e8eaed' }}>
+                    {log.resource_type} <span style={{ color: '#6b7280', fontFamily: 'monospace' }}>({log.resource_id.substring(0, 8)}...)</span>
                   </td>
-                  <td style={{ padding: '12px', fontSize: '13px', color: '#9ca3af' }}>
-                    {new Date(log.created_at).toLocaleString()}
+                  <td style={{ padding: '12px', fontSize: '13px', fontFamily: 'monospace', color: '#9ca3af' }}>
+                    {(log as any).ip_address || '0.0.0.0'}
                   </td>
                 </tr>
               ))}

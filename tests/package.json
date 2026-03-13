@@ -1,0 +1,20 @@
+{
+  "name": "framesentinel-tests",
+  "version": "1.0.0",
+  "description": "E2E and Integration Tests for FrameSentinel",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:integration": "pytest tests/integration -v",
+    "test:unit": "pytest tests/unit -v",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "playwright:install": "playwright install",
+    "playwright:codegen": "playwright codegen http://localhost:3002"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}

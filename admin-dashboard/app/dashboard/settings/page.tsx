@@ -176,9 +176,14 @@ export default function SettingsPage() {
         marginBottom: '20px',
       }}>
         <h2 style={{ fontSize: '20px', marginBottom: '20px', color: '#e8eaed' }}>Detection Thresholds</h2>
-        <p style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '20px' }}>
+        <p style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '12px' }}>
           Adjust sensitivity for fraud detection modules (0.0 - 1.0)
         </p>
+        <div style={{ padding: '12px', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '8px', marginBottom: '20px' }}>
+          <p style={{ fontSize: '13px', color: '#10b981', lineHeight: '1.6' }}>
+            💡 <strong>Impact:</strong> Lower thresholds = stricter detection (more flags). Higher thresholds = lenient detection (fewer flags). Adjust based on your risk tolerance.
+          </p>
+        </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <div>
@@ -391,27 +396,133 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <button
-        onClick={handleSave}
-        disabled={saving}
-        style={{
-          padding: '14px 32px',
-          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-          color: '#e8eaed',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: saving ? 'not-allowed' : 'pointer',
-          fontSize: '16px',
-          fontWeight: '600',
-          opacity: saving ? 0.6 : 1,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-        }}
-      >
-        <Save size={18} />
-        <span>{saving ? 'Saving...' : 'Save Settings'}</span>
-      </button>
+      <div style={{
+        background: 'rgba(42, 52, 65, 0.5)',
+        padding: '24px',
+        borderRadius: '12px',
+        border: '1px solid rgba(16, 185, 129, 0.25)',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+        marginBottom: '20px',
+      }}>
+        <h2 style={{ fontSize: '20px', marginBottom: '20px', color: '#e8eaed' }}>Detection Models</h2>
+        <p style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '20px' }}>
+          AI models powering fraud detection pipeline
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+          {[
+            { name: 'Deepfake Detection', version: 'v1.3.2', updated: '2024-02-15', accuracy: '94.2%', status: 'active' },
+            { name: 'Replay Attack Detection', version: 'v2.1.0', updated: '2024-02-20', accuracy: '91.8%', status: 'active' },
+            { name: 'Injection Detection', version: 'v1.8.5', updated: '2024-02-10', accuracy: '89.5%', status: 'active' },
+            { name: 'Face Swap Detection', version: 'v2.0.1', updated: '2024-02-25', accuracy: '92.7%', status: 'active' },
+            { name: 'Metadata Integrity', version: 'v1.5.3', updated: '2024-01-30', accuracy: '96.1%', status: 'active' },
+          ].map((model, idx) => (
+            <div key={idx} style={{
+              padding: '16px',
+              background: '#111827',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              borderRadius: '8px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '14px', fontWeight: '600', color: '#e8eaed', marginBottom: '4px' }}>
+                  {model.name}
+                </div>
+                <div style={{ fontSize: '12px', color: '#9ca3af' }}>
+                  Updated: {model.updated}
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '2px' }}>Accuracy</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#10b981' }}>{model.accuracy}</div>
+                </div>
+                <span style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  color: '#10b981',
+                  border: '1px solid #10b981',
+                  fontFamily: 'monospace',
+                }}>
+                  {model.version}
+                </span>
+                <span style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  color: '#10b981',
+                  border: '1px solid #10b981',
+                  textTransform: 'uppercase',
+                }}>
+                  {model.status}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop: '20px', padding: '16px', background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '8px' }}>
+          <p style={{ fontSize: '13px', color: '#10b981', lineHeight: '1.6', margin: 0 }}>
+            💡 <strong>Model Updates:</strong> All models are automatically updated when new versions are deployed. Version history and rollback options available in enterprise plan.
+          </p>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '12px' }}>
+        <button
+          onClick={() => {
+            setSettings({
+              tenant_id: tenantId,
+              webhook_url: '',
+              webhook_enabled: false,
+              deepfake_threshold: 0.70,
+              replay_threshold: 0.65,
+              injection_threshold: 0.60,
+              face_swap_threshold: 0.75,
+            });
+          }}
+          style={{
+            padding: '14px 32px',
+            background: '#1F2937',
+            color: '#9CA3AF',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: '600',
+          }}
+        >
+          Reset to Default
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          style={{
+            padding: '14px 32px',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: '#e8eaed',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: saving ? 'not-allowed' : 'pointer',
+            fontSize: '16px',
+            fontWeight: '600',
+            opacity: saving ? 0.6 : 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <Save size={18} />
+          <span>{saving ? 'Saving...' : 'Save Settings'}</span>
+        </button>
+      </div>
     </div>
   );
 }

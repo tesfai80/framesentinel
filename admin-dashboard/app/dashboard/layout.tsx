@@ -2,7 +2,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { BarChart3, Video, Search, Webhook, FileText, Settings, Users, LogOut, Key, Menu, X, Coins, Building2 } from 'lucide-react';
+import { BarChart3, Video, Search, Webhook, FileText, Settings, Users, LogOut, Key, Menu, X, Coins, Building2, TrendingUp } from 'lucide-react';
 import { ToastContainer } from '@/components/Toast';
 import { ConfirmProvider } from '@/components/ConfirmDialog';
 import { FrameSentinelLogo } from '@/components/Logo';
@@ -36,8 +36,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Clear Supabase session
+    const { supabase } = await import('@/lib/supabase');
+    await supabase.auth.signOut();
+    
+    // Clear local storage
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    
     router.push('/login');
   };
 
@@ -47,6 +54,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { path: '/dashboard', label: 'Overview', icon: BarChart3 },
     { path: '/dashboard/sessions', label: 'Sessions', icon: Video },
     { path: '/dashboard/review', label: 'Review Queue', icon: Search },
+    { path: '/dashboard/analytics', label: 'Fraud Analytics', icon: TrendingUp },
     { path: '/dashboard/organizations', label: 'Organizations', icon: Building2 },
     { path: '/dashboard/users', label: 'Users', icon: Users },
     { path: '/dashboard/api-keys', label: 'API Keys', icon: Key },

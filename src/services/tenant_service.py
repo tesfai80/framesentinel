@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from src.models.database import Tenant, User, BillingAccount
 from datetime import datetime
 import uuid
-import hashlib
+import bcrypt
 
 class TenantService:
     @staticmethod
@@ -19,10 +19,11 @@ class TenantService:
         db.add(tenant)
         
         # Create admin user
+        password_hash = bcrypt.hashpw(admin_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         user = User(
             id=str(uuid.uuid4()),
             email=admin_email,
-            password_hash=hashlib.sha256(admin_password.encode()).hexdigest(),
+            password_hash=password_hash,
             role="ADMIN",
             tenant_id=tenant_id
         )

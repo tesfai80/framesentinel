@@ -10,6 +10,7 @@ from datetime import datetime
 import asyncio
 import hashlib
 import json
+import os
 
 class VideoProcessor:
     def __init__(self):
@@ -112,7 +113,11 @@ class VideoProcessor:
                     )
                     db.add(result)
                     session.state = SessionState.COMPLETED
+                    session.video_path = None  # Clear video path from DB
                     db.commit()
+                    
+                    # Delete video file immediately
+                    self._delete_video_file(video_path)
                     
                     # Send webhook even for cached results
                     scoring_result = {
@@ -151,6 +156,7 @@ class VideoProcessor:
             
             db.add(result)
             session.state = SessionState.COMPLETED
+            session.video_path = None  # Clear video path from DB
             db.commit()
             
             print(f"[VIDEO PROCESSOR] Result saved to database")
@@ -167,6 +173,9 @@ class VideoProcessor:
                 cache_service.set(cache_key, json.dumps(cache_data), ttl=86400)
                 print(f"[VIDEO PROCESSOR] Result cached")
             
+            # Delete video file immediately after processing
+            self._delete_video_file(video_path)
+            
             # Send webhook
             self._send_webhook(session_id, session, scoring_result, processing_start, db)
             
@@ -176,4 +185,17 @@ class VideoProcessor:
             traceback.print_exc()
             session.state = SessionState.FAILED
             db.commit()
+            # Delete video file even on failure
+            self._delete_video_file(video_path)
             raise e
+    
+    def _delete_video_file(self, video_path: str):
+        """Delete video file from storage"""
+        try:
+            if video_path and os.path.exists(video_path):
+                os.remove(video_path)
+                print(f"[VIDEO PROCESSOR] ✅ Video file deleted: {video_path}")
+            else:
+                print(f"[VIDEO PROCESSOR] ⚠️ Video file not found or already deleted: {video_path}")
+        except Exception as e:
+            print(f"[VIDEO PROCESSOR] ❌ Failed to delete video file {video_path}: {e}")

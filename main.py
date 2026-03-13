@@ -8,7 +8,9 @@ from src.api.api_key_routes import router as api_key_router
 from src.api.usage_routes import router as usage_router
 from src.api.billing_routes import router as billing_router
 from src.api.tenant_routes import router as tenant_router
+from src.api.demo_routes import router as demo_router
 from src.config.database import init_db
+from src.middleware.api_key_middleware import APIKeyMiddleware
 
 app = FastAPI(
     title="FrameSentinel API",
@@ -19,12 +21,15 @@ app = FastAPI(
 # CORS must be first
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3001", "http://localhost:3002", "http://localhost:3000", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"]
 )
+
+# API Key middleware for authentication and credit tracking
+app.add_middleware(APIKeyMiddleware)
 
 app.include_router(router)
 app.include_router(admin_router)
@@ -34,6 +39,7 @@ app.include_router(api_key_router)
 app.include_router(usage_router)
 app.include_router(billing_router)
 app.include_router(tenant_router)
+app.include_router(demo_router)  # Demo routes - no auth required
 
 @app.on_event("startup")
 async def startup_event():

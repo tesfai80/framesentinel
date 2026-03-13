@@ -118,21 +118,49 @@ export default function HomePage() {
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? '16px' : '24px', maxWidth: '900px', margin: '0 auto' }}>
           {[
-            { name: 'FrameSentinel', desc: 'AI fraud detection for video KYC' },
-            { name: 'SaaSRX', desc: 'SaaS security intelligence platform' },
-            { name: 'GenDetect', desc: 'AI media authenticity detection' },
+            { name: 'FrameSentinel', desc: 'AI fraud detection for video KYC', logo: '/logos/framesentinel.svg' },
+            { name: 'SaaSRX', desc: 'SaaS security intelligence platform', logo: '/logos/saasrx.png' },
+            { name: 'GenDetect', desc: 'AI media authenticity detection', logo: '/logos/gendetect.png' },
           ].map((product) => (
             <div key={product.name} style={{
               padding: '20px',
               background: 'rgba(26, 31, 46, 0.6)',
               borderRadius: '12px',
               border: '1px solid rgba(16, 185, 129, 0.2)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '12px',
             }}>
-              <div style={{ color: '#10b981', fontSize: isMobile ? '16px' : '18px', fontWeight: '600', marginBottom: '8px' }}>
-                {product.name}
-              </div>
-              <div style={{ color: '#9ca3af', fontSize: isMobile ? '13px' : '14px' }}>
-                {product.desc}
+              {product.logo && (
+                <div style={{
+                  width: isMobile ? '48px' : '64px',
+                  height: isMobile ? '48px' : '64px',
+                  background: 'transparent',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <img 
+                    src={product.logo} 
+                    alt={`${product.name} logo`}
+                    style={{ 
+                      width: '100%', 
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </div>
+              )}
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ color: '#10b981', fontSize: isMobile ? '16px' : '18px', fontWeight: '600', marginBottom: '8px' }}>
+                  {product.name}
+                </div>
+                <div style={{ color: '#9ca3af', fontSize: isMobile ? '13px' : '14px' }}>
+                  {product.desc}
+                </div>
               </div>
             </div>
           ))}

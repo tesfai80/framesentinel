@@ -2,12 +2,13 @@ from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
 from sqlalchemy.orm import Session
 from src.config.database import get_db
 from src.api.auth import verify_api_key
-from src.middleware.api_key_middleware import get_tenant_from_request
+from src.middleware.api_key_middleware import get_tenant_from_request, get_api_key_from_request
 from src.models.schemas import (
     SessionCreateRequest, SessionCreateResponse, UploadResponse, VerificationResponse
 )
-from src.models.database import VerificationSession, VerificationResult, SessionState
+from src.models.database import VerificationSession, VerificationResult, SessionState, UsageRecord
 from src.services.background_processor import background_processor
+from src.services.api_key_service import APIKeyService
 from src.config.settings import settings
 import uuid
 import os
@@ -62,6 +63,15 @@ async def list_sessions(request: Request, db: Session = Depends(get_db), _=Depen
 @router.post("/sessions", response_model=SessionCreateResponse)
 async def create_session(request: Request, req_body: SessionCreateRequest, db: Session = Depends(get_db), _=Depends(verify_api_key)):
     tenant_id = get_tenant_from_request(request) or "default"
+    api_key_id = get_api_key_from_request(request)
+    
+    # Check and consume credits
+    has_credits, remaining = APIKeyService.check_tenant_credits(db, tenant_id)
+    if not has_credits:
+        raise HTTPException(status_code=402, detail=f"Insufficient credits. Remaining: {remaining}")
+    
+    # Consume 1 credit
+    APIKeyService.consume_credit(db, tenant_id, 1.0)
     
     session_id = str(uuid.uuid4())
     session = VerificationSession(
@@ -72,8 +82,21 @@ async def create_session(request: Request, req_body: SessionCreateRequest, db: S
         device_metadata=req_body.device_metadata
     )
     db.add(session)
+    
+    # Record usage
+    usage = UsageRecord(
+        tenant_id=tenant_id,
+        session_id=session_id,
+        api_key_id=api_key_id,
+        processing_time_ms=0,
+        cost_credits=1.0
+    )
+    db.add(usage)
+    
     db.commit()
     db.refresh(session)
+    
+    print(f"[CREDITS] Consumed 1 credit for tenant {tenant_id}. Remaining: {remaining - 1}")
     
     return SessionCreateResponse(
         session_id=session.session_id,

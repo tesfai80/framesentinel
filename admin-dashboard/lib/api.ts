@@ -85,4 +85,33 @@ export const api = {
     fetchAPI(`/api/v1/api-keys/${keyId}`, { method: 'DELETE' }),
   getUsageStats: () => fetchAPI('/api/v1/api-keys/usage'),
   getCredits: () => fetchAPI('/api/v1/usage/credits'),
+
+  // Analytics
+  getAnalytics: (params?: { time_range?: string }) => 
+    fetchAPI(`/api/v1/admin/analytics?${new URLSearchParams(params as any)}`),
+  
+  // System Health
+  getSystemHealth: () => fetchAPI('/api/v1/admin/system-health'),
+  
+  // API Usage
+  getAPIUsage: () => fetchAPI('/api/v1/admin/api-usage'),
+  
+  // Model Performance
+  getModelPerformance: () => fetchAPI('/api/v1/admin/model-performance'),
+  
+  // Detection Activity
+  getDetectionActivity: (params?: { time_range?: string }) => 
+    fetchAPI(`/api/v1/admin/detection-activity?${new URLSearchParams(params as any)}`),
+  
+  // Trends
+  getTrends: (params?: { time_range?: string }) => 
+    fetchAPI(`/api/v1/admin/trends?${new URLSearchParams(params as any)}`),
+
+  // Detection Trend (7 days)
+  getDetectionTrend: (params?: { days?: number }) => 
+    fetchAPI(`/api/v1/admin/detection-trend?${new URLSearchParams(params as any)}`),
+
+  // Security Events
+  getSecurityEvents: (params?: { limit?: number }) => 
+    fetchAPI(`/api/v1/admin/security-events?${new URLSearchParams(params as any)}`),
 };
