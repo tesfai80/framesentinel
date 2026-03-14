@@ -1173,7 +1173,7 @@ export default function HomePage() {
           maxWidth: '1200px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(5, 1fr)',
           gap: isMobile ? '32px' : '40px',
         }}>
           <div>
@@ -1191,6 +1191,16 @@ export default function HomePage() {
               <Link href="/features" style={{ color: '#9ca3af', fontSize: '14px' }}>Features</Link>
               <Link href="/pricing" style={{ color: '#9ca3af', fontSize: '14px' }}>Pricing</Link>
               <Link href="/docs" style={{ color: '#9ca3af', fontSize: '14px' }}>Documentation</Link>
+              <Link href="/deepfake-detection-api" style={{ color: '#9ca3af', fontSize: '14px' }}>Deepfake Detection API</Link>
+            </div>
+          </div>
+          <div>
+            <h4 style={{ color: '#e8eaed', marginBottom: '16px', fontSize: '16px', fontWeight: '600' }}>Resources</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <Link href="/video-kyc-fraud-detection" style={{ color: '#9ca3af', fontSize: '14px' }}>Video KYC Fraud Detection</Link>
+              <Link href="/deepfake-kyc-detection" style={{ color: '#9ca3af', fontSize: '14px' }}>Deepfake KYC Detection</Link>
+              <Link href="/what-is-video-identity-fraud" style={{ color: '#9ca3af', fontSize: '14px' }}>What is Video Identity Fraud</Link>
+              <Link href="/best-deepfake-detection-tools" style={{ color: '#9ca3af', fontSize: '14px' }}>Best Deepfake Detection Tools</Link>
             </div>
           </div>
           <div>
