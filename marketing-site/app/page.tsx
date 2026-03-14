@@ -530,17 +530,19 @@ export default function HomePage() {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)', gap: isMobile ? '16px' : '24px', maxWidth: '1000px', margin: '0 auto' }}>
             {[
-              { name: 'AWS', logo: '/logos/aws.svg', hasLogo: true },
-              { name: 'GCP', logo: '/logos/gcp.svg', hasLogo: true },
-              { name: 'Azure', logo: '/logos/azure.svg', hasLogo: true },
-              { name: 'Kubernetes', logo: '/logos/kubernetes.svg', hasLogo: true },
-              { name: 'Docker', logo: '/logos/docker.svg', hasLogo: true },
-              { name: 'Webhooks', logo: '/logos/webhooks.svg', hasLogo: true },
-              { name: 'Cloud Storage', logo: '/logos/Cloud_Storage-512-color.svg', hasLogo: true },
+              { name: 'AWS', logo: '/logos/aws.svg', hasLogo: true, icon: null },
+              { name: 'GCP', logo: '/logos/gcp.svg', hasLogo: true, icon: null },
+              { name: 'Azure', logo: '/logos/azure.svg', hasLogo: true, icon: null },
+              { name: 'Kubernetes', logo: '/logos/kubernetes.svg', hasLogo: true, icon: null },
+              { name: 'Docker', logo: '/logos/docker.svg', hasLogo: true, icon: null },
+              { name: 'Webhooks', logo: '/logos/webhooks.svg', hasLogo: true, icon: null },
+              { name: 'Cloud Storage', logo: '/logos/Cloud_Storage-512-color.svg', hasLogo: true, icon: null },
               { name: 'REST API', icon: Webhook, hasLogo: false },
               { name: 'Serverless', icon: Zap, hasLogo: false },
               { name: 'Identity Providers', icon: UserCheck, hasLogo: false },
-            ].map((tech) => (
+            ].map((tech) => {
+              const IconComponent = tech.icon as any;
+              return (
               <div key={tech.name} style={{
                 padding: isMobile ? '16px 12px' : '20px',
                 background: 'linear-gradient(135deg, rgba(26, 31, 46, 0.8) 0%, rgba(31, 41, 55, 0.8) 100%)',
@@ -594,14 +596,15 @@ export default function HomePage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                    <tech.icon size={isMobile ? 32 : 40} color="#10b981" strokeWidth={1.5} />
+                    {IconComponent && <IconComponent size={isMobile ? 32 : 40} color="#10b981" strokeWidth={1.5} />}
                   </div>
                 )}
                 <span style={{ color: '#e8eaed', fontSize: isMobile ? '12px' : '14px', fontWeight: '600' }}>
                   {tech.name}
                 </span>
               </div>
-            ))}
+            );
+            })}
           </div>
         </div>
       </section>
