@@ -168,7 +168,7 @@ export default function TermsPage() {
             <p style={{ color: '#9ca3af' }}>
               Questions about these terms? Contact us at:
               <br />
-              <strong style={{ color: '#10b981' }}>legal@framesentinel.com</strong>
+              <a href="mailto:legal@framesentinel.com" style={{ color: '#10b981', fontWeight: 'bold', textDecoration: 'none' }}>legal@framesentinel.com</a>
               <br />
               FrameSentinel Inc., San Francisco, CA
             </p>

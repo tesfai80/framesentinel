@@ -132,7 +132,7 @@ export default function PrivacyPage() {
             <p style={{ color: '#9ca3af' }}>
               For privacy concerns or data requests, contact our Data Protection Officer at:
               <br />
-              <strong style={{ color: '#10b981' }}>privacy@framesentinel.com</strong>
+              <a href="mailto:privacy@framesentinel.com" style={{ color: '#10b981', fontWeight: 'bold', textDecoration: 'none' }}>privacy@framesentinel.com</a>
               <br />
               Response time: Within 48 hours
             </p>
