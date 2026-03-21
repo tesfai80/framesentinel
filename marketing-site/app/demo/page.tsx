@@ -3,6 +3,8 @@ import { Shield, Upload, CheckCircle, AlertCircle, Loader, ArrowRight } from 'lu
 import Link from 'next/link';
 import { useState } from 'react';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 export default function DemoPage() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -45,7 +47,7 @@ export default function DemoPage() {
       const formData = new FormData();
       formData.append('video', file);
 
-      const response = await fetch('http://localhost:8000/api/v1/demo/upload', {
+      const response = await fetch(`${API_URL}/api/v1/demo/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -85,7 +87,7 @@ export default function DemoPage() {
       attempts++;
 
       try {
-        const response = await fetch(`http://localhost:8000/api/v1/demo/result/${sid}`);
+        const response = await fetch(`${API_URL}/api/v1/demo/result/${sid}`);
         const data = await response.json();
 
         if (data.state === 'COMPLETED' || data.state === 'FAILED') {
