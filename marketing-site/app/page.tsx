@@ -1,12 +1,14 @@
 'use client';
 import { Shield, Zap, Lock, CheckCircle, ArrowRight, Play, BarChart3, Globe, Upload, Image, Cpu, Target, Bell, Key, Clock, Database, FileCheck, Award, Cloud, ShieldCheck, Building2, Coins, ShoppingCart, Users, Webhook, Layers, UserCheck } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useIsMobile } from './utils/useIsMobile';
 import { MobileNav, DesktopNav } from './components/Navigation';
 import { StructuredData } from './components/StructuredData';
 
 export default function HomePage() {
   const isMobile = useIsMobile();
+  const [showVideo, setShowVideo] = useState(false);
 
   return (
     <div>
@@ -84,7 +86,7 @@ export default function HomePage() {
               Start Free Trial
               <ArrowRight size={20} />
             </Link>
-            <Link href="/demo" style={{
+            <button onClick={() => setShowVideo(true)} style={{
               padding: isMobile ? '14px 32px' : '16px 40px',
               background: 'rgba(45, 53, 72, 0.8)',
               color: '#e8eaed',
@@ -96,10 +98,11 @@ export default function HomePage() {
               justifyContent: 'center',
               gap: '10px',
               border: '1px solid #374151',
+              cursor: 'pointer',
             }}>
               <Play size={20} />
               Watch Demo
-            </Link>
+            </button>
           </div>
           <p style={{ marginTop: '24px', color: '#6b7280', fontSize: isMobile ? '12px' : '14px', padding: isMobile ? '0 20px' : '0' }}>
             No credit card required • 14-day free trial • Cancel anytime
@@ -1164,6 +1167,32 @@ export default function HomePage() {
           </p>
         </div>
       </section>
+
+      {/* Video Modal */}
+      {showVideo && (
+        <div
+          onClick={() => setShowVideo(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.85)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+        >
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '90%', maxWidth: '900px', cursor: 'default' }}>
+            <video
+              src="/demo-video.mp4"
+              controls
+              autoPlay
+              style={{ width: '100%', borderRadius: '12px' }}
+            />
+          </div>
+        </div>
+      )}
 
       <footer style={{
         padding: isMobile ? '40px 20px' : '60px 40px',
