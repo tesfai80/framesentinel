@@ -3,14 +3,12 @@ from sqlalchemy.orm import Session
 from src.config.database import get_db
 from fastapi import Depends
 from src.models.database import VerificationSession, VerificationResult, SessionState
-from src.services.background_processor import background_processor
+from src.services.video_processor import VideoProcessor
 from src.config.settings import settings
 import uuid
 import os
-import shutil
 import time
 from collections import defaultdict
-from datetime import datetime, timedelta
 import cv2
 
 router = APIRouter(prefix="/api/v1/demo")
@@ -138,20 +136,32 @@ async def demo_upload(
     session.state = SessionState.UPLOADED
     db.commit()
     
-    # Start processing
-    background_processor.enqueue(session_id, video_path)
-    
-    return {
-        "session_id": session_id,
-        "state": SessionState.UPLOADED,
-        "message": "Demo video uploaded successfully. Processing...",
-        "demo_mode": True,
-        "limitations": {
-            "attempts_remaining": RATE_LIMIT_PER_IP - len(rate_limit_store[client_ip]),
-            "max_video_duration": MAX_VIDEO_DURATION,
-            "partial_results": True
+    # Process synchronously (required for Cloud Run multi-instance)
+    try:
+        processor = VideoProcessor()
+        processor.process_video(session_id, video_path, db)
+        db.refresh(session)
+        
+        result = db.query(VerificationResult).filter(
+            VerificationResult.session_id == session_id
+        ).first()
+        
+        return {
+            "session_id": session_id,
+            "state": session.state,
+            "authenticity_score": result.authenticity_score if result else None,
+            "risk_level": result.risk_level if result else None,
+            "detection_flags": result.detection_flags if result else None,
+            "demo_mode": True,
+            "message": "Demo results - Sign up for full analysis including frame-by-frame timeline",
+            "limitations": {
+                "attempts_remaining": RATE_LIMIT_PER_IP - len(rate_limit_store[client_ip]),
+                "max_video_duration": MAX_VIDEO_DURATION,
+                "partial_results": True
+            }
         }
-    }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
 
 @router.get("/result/{session_id}")
 async def demo_result(

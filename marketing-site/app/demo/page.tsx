@@ -70,43 +70,12 @@ export default function DemoPage() {
       const data = await response.json();
       setSessionId(data.session_id);
       setAttemptsRemaining(data.limitations?.attempts_remaining);
-
-      // Poll for result
-      pollResult(data.session_id);
+      setResult(data);
+      setUploading(false);
     } catch (err: any) {
       setError(err.message);
       setUploading(false);
     }
-  };
-
-  const pollResult = async (sid: string) => {
-    const maxAttempts = 60; // 60 seconds max
-    let attempts = 0;
-
-    const poll = setInterval(async () => {
-      attempts++;
-
-      try {
-        const response = await fetch(`${API_URL}/api/v1/demo/result/${sid}`);
-        const data = await response.json();
-
-        if (data.state === 'COMPLETED' || data.state === 'FAILED') {
-          clearInterval(poll);
-          setResult(data);
-          setUploading(false);
-        }
-
-        if (attempts >= maxAttempts) {
-          clearInterval(poll);
-          setError('Processing timeout. Please try again.');
-          setUploading(false);
-        }
-      } catch (err) {
-        clearInterval(poll);
-        setError('Failed to get result');
-        setUploading(false);
-      }
-    }, 1000);
   };
 
   const getRiskColor = (riskLevel: string) => {
