@@ -98,7 +98,7 @@ export default function RefundPolicyPage() {
               7. How to Request a Refund
             </h2>
             <p style={{ color: '#9ca3af', marginBottom: '20px' }}>
-              To request a refund within the 14-day guarantee period, contact our team at <a href="mailto:billing@framesentinel.com" style={{ color: '#10b981', fontWeight: 'bold', textDecoration: 'none' }}>billing@framesentinel.com</a> with your account email and reason for the request. Refunds are processed within 5–10 business days to the original payment method.
+              To request a refund within the 14-day guarantee period, contact our team at <a href="mailto:support@framesentinel.com" style={{ color: '#10b981', fontWeight: 'bold', textDecoration: 'none' }}>support@framesentinel.com</a> with your account email and reason for the request. Refunds are processed within 5–10 business days to the original payment method.
             </p>
 
             <h2 style={{ fontSize: '24px', fontWeight: '600', marginTop: '32px', marginBottom: '16px', color: '#10b981' }}>
@@ -119,7 +119,7 @@ export default function RefundPolicyPage() {
             <p style={{ color: '#9ca3af' }}>
               Questions about refunds or billing? Contact us at:
               <br />
-              <a href="mailto:billing@framesentinel.com" style={{ color: '#10b981', fontWeight: 'bold', textDecoration: 'none' }}>billing@framesentinel.com</a>
+              <a href="mailto:support@framesentinel.com" style={{ color: '#10b981', fontWeight: 'bold', textDecoration: 'none' }}>support@framesentinel.com</a>
               <br />
               FrameSentinel Inc., San Francisco, CA
             </p>
