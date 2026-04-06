@@ -1246,6 +1246,7 @@ export default function HomePage() {
               <Link href="/privacy" style={{ color: '#9ca3af', fontSize: '14px' }}>Privacy</Link>
               <Link href="/terms" style={{ color: '#9ca3af', fontSize: '14px' }}>Terms</Link>
               <Link href="/security" style={{ color: '#9ca3af', fontSize: '14px' }}>Security</Link>
+              <Link href="/refund-policy" style={{ color: '#9ca3af', fontSize: '14px' }}>Refund Policy</Link>
             </div>
           </div>
         </div>
