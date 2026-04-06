@@ -44,7 +44,7 @@ export default function RefundPolicyPage() {
             Refund Policy
           </h1>
           <p style={{ fontSize: '16px', color: '#9ca3af', marginBottom: '40px' }}>
-            Last updated: January 2025
+            Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </p>
 
           <div style={{ color: '#e8eaed', lineHeight: '1.8' }}>
